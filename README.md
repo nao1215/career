@@ -145,29 +145,14 @@ renders the Japanese 職務経歴書 from the same source.
 ## Templates
 
 Templates are entries in a small registry, so a new layout, paper size, or
-language is added by registering one more template.
+language is added by registering one more. Previews and sample PDFs are above;
+long histories flow onto additional pages automatically.
 
-### cv
-
-An English résumé: a name and contact header, then Summary, Skills, Experience,
-Education, Certifications, and Publications.
-
-Sample: [`image/cv-sample.pdf`](./image/cv-sample.pdf) (preview above).
-
-### japanese-resume (履歴書)
-
-The JIS-style 履歴書 on A4: photo frame, personal block, and the 学歴・職歴 and
-免許・資格 tables. Long histories flow onto additional pages. This template always
-renders in black, matching the convention for the form. Aliases: `履歴書`.
-
-Sample: [`image/japanese-resume-sample.pdf`](./image/japanese-resume-sample.pdf) (preview above).
-
-### work-history (職務経歴書)
-
-The Japanese 職務経歴書: 職務要約, skills, per-company project history, 資格, 出版,
-and 自己PR, with automatic page breaks. Aliases: `職務経歴書`.
-
-Sample: [`image/work-history-sample.pdf`](./image/work-history-sample.pdf) (preview above).
+| Template | Aliases | Document |
+| :--- | :--- | :--- |
+| `cv` | | English résumé: contact header, Summary, Skills, Experience, Education, Certifications, Publications. |
+| `japanese-resume` | `履歴書` | JIS-style 履歴書 on A4: photo frame, personal block, and the 学歴・職歴 / 免許・資格 tables. Always black, per the form's convention. |
+| `work-history` | `職務経歴書` | Japanese 職務経歴書: 職務要約, skills, per-company project history, 資格, 出版, 自己PR. |
 
 ## Photo (履歴書)
 
