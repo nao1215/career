@@ -1,0 +1,39 @@
+# 最小構成のサンプル。まずはこれを書き換えて試すのがおすすめです。
+date: 2026年6月13日現在
+profile:
+  name: 山田 太郎
+  name_kana: やまだ たろう
+  birth_date: 1995年4月1日
+  gender: 男
+  email: taro@example.com
+  phone: 090-0000-0000
+  address:
+    zip: 100-0001
+    text: 東京都千代田区千代田1-1-1
+education:
+  - { year: 2014, month: 4, value: 〇〇大学 〇〇学部 入学 }
+  - { year: 2018, month: 3, value: 〇〇大学 〇〇学部 卒業 }
+work:
+  - { year: 2018, month: 4, value: 〇〇株式会社 入社 }
+  - { value: 現在に至る }
+licenses:
+  - { year: 2016, month: 8, value: 普通自動車第一種運転免許 取得 }
+rireki:
+  hobby: 読書、ランニング
+  motivation: 貴社の事業に貢献したいと考え、志望しました。
+career:
+  summary: |
+    〇〇株式会社で〇年間、Webアプリケーションの開発に従事してきました。
+  skills:
+    - プログラミング（〇〇、〇〇）
+    - チーム開発／コードレビュー
+  histories:
+    - company: 〇〇株式会社
+      period: 2018年4月 - 現在
+      role: ソフトウェアエンジニア
+      projects:
+        - title: 〇〇サービスの開発
+          description: 〇〇を用いて〇〇の機能を設計・実装しました。
+          tech: [〇〇, 〇〇]
+  self_pr: |
+    〇〇を強みとし、〇〇に貢献できます。

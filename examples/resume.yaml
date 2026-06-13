@@ -1,0 +1,117 @@
+# career 設定ファイルのサンプル（すべて架空のデータです）。
+#
+# 1つのYAMLで履歴書（rirekisho）と職務経歴書（shokumukeirekisho）の両方を生成できます。
+#   career generate examples/resume.yaml --template rirekisho          --output rirekisho.pdf
+#   career generate examples/resume.yaml --template shokumukeirekisho  --output shokumukeirekisho.pdf
+#
+# 氏名・住所・経歴などは説明用に作成した架空の人物のものです。実在しません。
+
+# 書類右上に印字される作成日。
+date: 2026年6月13日現在
+
+# 基本情報（両方の書類で共通）。
+profile:
+  name: 見本 太郎            # 氏名
+  name_kana: みほん たろう   # ふりがな
+  birth_date: 1992年5月10日  # 生年月日
+  age: 満 34 歳             # 任意。空にすると非表示
+  gender: 男               # 性別
+  email: taro.mihon@example.com
+  phone: 090-1234-5678     # 携帯電話番号
+  photo: ""                # 任意。証明写真の画像パス（JPEG/PNG）。空なら枠のみ表示
+  address:
+    zip: 100-0001
+    kana: とうきょうとちよだく
+    text: 東京都千代田区千代田1-1-1 サンプルマンション101
+  # contact: 連絡先。現住所と同じ場合は省略可。
+  # contact:
+  #   zip: 100-0001
+  #   text: 同上
+
+# 学歴（古い順）。year/month は数字でも "20XX" のような文字列でも書けます。
+education:
+  - { year: 2011, month: 4, value: 見本工科大学 工学部 情報工学科 入学 }
+  - { year: 2015, month: 3, value: 見本工科大学 工学部 情報工学科 卒業 }
+
+# 職歴（古い順）。履歴書の「学歴・職歴」欄に使われます。
+work:
+  - { year: 2015, month: 4,  value: 株式会社サンプルソフト 入社 }
+  - { year: 2020, month: 3,  value: 株式会社サンプルソフト 退職 }
+  - { year: 2020, month: 4,  value: クラウドテック株式会社 入社 }
+  - { value: 現在に至る }
+
+# 免許・資格（履歴書の「免許・資格」欄）。
+licenses:
+  - { year: 2013, month: 6,  value: 普通自動車第一種運転免許 取得 }
+  - { year: 2015, month: 4,  value: 基本情報技術者試験 取得 }
+  - { year: 2016, month: 10, value: 応用情報技術者試験 取得 }
+  - { year: 2022, month: 8,  value: AWS Certified Solutions Architect – Associate 取得 }
+
+# 履歴書だけで使う項目。
+rireki:
+  commuting_time: 45分
+  dependents: １人
+  spouse: 有
+  supporting_spouse: 無
+  hobby: |
+    読書、ランニング、個人開発。
+    休日はWebアプリケーションの個人開発に取り組んでいます。
+  motivation: |
+    貴社の技術への取り組みと、エンジニアが裁量を持って開発できる文化に魅力を感じ、志望しました。
+  request: |
+    フルリモート勤務を希望します。その他の条件は貴社規定に従います。
+
+# 職務経歴書だけで使う項目。
+career:
+  # 職務要約。
+  summary: |
+    Webアプリケーション開発を中心に約10年の経験を持つソフトウェアエンジニアです。
+    バックエンドからインフラまでを一貫して担当し、サービスの設計・実装・運用に携わってきました。
+    チーム開発ではコードレビューと自動テストの整備を推進しています。
+
+  # 活かせる経験・知識・技術。
+  skills:
+    - サーバーサイド開発（Go / TypeScript）によるAPI設計・実装
+    - AWSを用いたクラウドインフラの設計・構築・運用
+    - CI/CDパイプラインの構築とテスト自動化
+    - チームでのコードレビュー・設計レビューの推進
+
+  # 職務経歴。会社ごとにブロックを作り、その中にプロジェクトを並べます。
+  histories:
+    - company: クラウドテック株式会社
+      period: 2020年4月 - 現在
+      role: バックエンドエンジニア
+      summary: SaaSプロダクトのバックエンド開発・運用に従事。
+      projects:
+        - title: 業務管理SaaSのAPI開発
+          period: 2020年4月 - 現在
+          role: バックエンド（チーム開発・5名）
+          description: GoによるREST APIの設計・実装と、AWS上でのインフラ構築・運用を担当。可用性とパフォーマンスの改善に取り組んでいます。
+          tech: [Go, AWS, PostgreSQL, Terraform]
+
+    - company: 株式会社サンプルソフト
+      period: 2015年4月 - 2020年3月
+      role: ソフトウェアエンジニア
+      summary: 受託開発のWebアプリケーション開発に従事。
+      projects:
+        - title: ECサイトの開発・保守
+          period: 2015年4月 - 2020年3月
+          role: フルスタック
+          description: フロントエンドからバックエンドまでを担当。要件定義・実装・テスト・リリースの一連の工程を経験しました。
+          tech: [TypeScript, Node.js, MySQL]
+
+  # 資格。
+  certifications:
+    - AWS Certified Solutions Architect – Associate
+    - 応用情報技術者試験 / 基本情報技術者試験
+
+  # 出版・登壇。
+  publications:
+    - 社内技術ブログにてバックエンド設計に関する記事を多数執筆
+    - 社内勉強会での登壇（テスト自動化、クラウド設計）
+
+  # 自己PR。
+  self_pr: |
+    設計から運用までを一人称で完遂することを得意としています。
+    継続的な学習を信条とし、新しい技術のキャッチアップとチームへの共有を欠かしません。
+    課題に対して手を動かして検証し、チーム全体の生産性向上に貢献します。
