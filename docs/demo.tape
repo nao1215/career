@@ -20,11 +20,17 @@ Show
 
 Sleep 600ms
 
+# Start a new resume from a template.
+Type "career init"
+Sleep 300ms
+Enter
+Sleep 1800ms
+
 # List the available templates.
 Type "career templates"
 Sleep 300ms
 Enter
-Sleep 2500ms
+Sleep 2200ms
 
 Hide
 Type "clear"
@@ -32,13 +38,11 @@ Enter
 Show
 Sleep 400ms
 
-# Generate an English CV from a YAML file.
-Type "career generate examples/cv.yaml --template cv --output cv.pdf"
+# One YAML file renders all three documents in the right language.
+Type "career generate examples/resume.yaml --template cv --output cv.pdf"
 Sleep 300ms
 Enter
-Sleep 1800ms
-
-# Generate the Japanese 履歴書 and 職務経歴書 from one file.
+Sleep 1500ms
 Type "career generate examples/resume.yaml --template japanese-resume"
 Sleep 300ms
 Enter

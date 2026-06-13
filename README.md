@@ -9,15 +9,16 @@ career generates résumé PDFs from a single YAML file. Write your career once i
 plain text, keep it under version control, and render a polished PDF with one
 command.
 
-It ships with three templates and a small template registry that is designed to
-grow:
+One file holds every document. Text fields can carry more than one language, so
+the same file produces an English CV and the Japanese formats, each in the right
+language:
 
 - `cv` — an English curriculum vitae / résumé.
 - `japanese-resume` — a JIS-style Japanese 履歴書.
 - `career-history` — a Japanese 職務経歴書 (work history).
 
-Adding a new format (another layout, paper size, or language) means registering
-one more template, so the tool is not limited to these three.
+Templates live in a small registry, so adding another layout, paper size, or
+language is a matter of registering one more template.
 
 ![demo](./image/demo.gif)
 
@@ -35,43 +36,79 @@ cd career
 make build   # produces ./career
 ```
 
-## Usage
+## Quick start
 
 ```bash
-career generate INPUT.yaml --template NAME [--output OUT.pdf] [--accent COLOR]
+career init                                            # write a starter resume.yaml
+career generate resume.yaml -t cv -o cv.pdf            # then edit and render
 ```
 
-The input file may be the first argument or `--input`, and short flags exist
-(`-t`, `-i`, `-o`). `career templates` lists every template.
-
-```bash
-career generate examples/cv.yaml -t cv -o cv.pdf
-```
+## Commands
 
 | Command | Description |
 | :--- | :--- |
+| `career init [PATH]` | Write a starter resume YAML file (`--force` to overwrite) |
 | `career generate` | Render a resume YAML file into a PDF |
 | `career templates` | List the available document templates |
 | `career version` | Print the version |
 | `career help [command]` | Show help |
 
-## Templates
+`generate` takes the input file as the first argument or `--input`, the template
+as `--template`/`-t`, the output as `--output`/`-o`, and an accent color as
+`--accent`.
 
-| Name | Aliases | Output |
-| :--- | :--- | :--- |
-| `cv` | | English curriculum vitae / résumé |
-| `japanese-resume` | `履歴書` | JIS-style Japanese 履歴書 (A4, 2 pages) |
-| `career-history` | `職務経歴書` | Japanese 職務経歴書 (work history) |
+```bash
+career generate resume.yaml -t cv               -o cv.pdf
+career generate resume.yaml -t japanese-resume  -o rirekisho.pdf
+career generate resume.yaml -t career-history   -o shokureki.pdf
+```
+
+## One file, multiple documents
+
+Each template reads the sections it needs from the same YAML:
+
+| Section | cv | japanese-resume | career-history |
+| :--- | :---: | :---: | :---: |
+| `profile` | ✓ | ✓ | ✓ |
+| `education` | ✓ | ✓ | |
+| `work` / `licenses` | | ✓ | |
+| `rireki` (hobby, motivation, …) | | ✓ | |
+| `career` (summary, skills, history, …) | ✓ | | ✓ |
+
+Sections a template does not use are simply ignored, so the three documents
+coexist in one file.
+
+### Multilingual fields
+
+Any text field is either a plain scalar (used for every language) or a
+`{ ja:, en: }` map. The `cv` template asks for `en`, the Japanese templates ask
+for `ja`, and either falls back to whatever is present.
+
+```yaml
+profile:
+  name:
+    ja: 見本 太郎
+    en: Taro Mihon
+career:
+  summary:
+    ja: Webアプリケーション開発を中心に約10年の経験があります。
+    en: About 10 years of experience in web application development.
+  skills:
+    - { ja: Go によるサーバーサイド開発, en: Backend development in Go }
+    - English and Japanese are both optional; a scalar applies everywhere
+```
+
+So one `career generate ... -t cv` renders the English résumé while
+`-t career-history` renders the Japanese 職務経歴書 from the same source.
+
+## Templates
 
 ### cv
 
 An English résumé: name and contact header, then Summary, Skills, Experience,
-Education, Certifications, and Publications. See
-[`examples/cv.yaml`](./examples/cv.yaml).
+Education, Certifications, and Publications.
 
-| Page 1 | Page 2 |
-| :---: | :---: |
-| ![cv page 1](./image/cv-p-1.png) | ![cv page 2](./image/cv-p-2.png) |
+![cv](./image/cv-p-1.png)
 
 Download: [`image/cv-sample.pdf`](./image/cv-sample.pdf)
 
@@ -92,13 +129,11 @@ Download: [`image/japanese-resume-sample.pdf`](./image/japanese-resume-sample.pd
 A flowing 職務経歴書: 職務要約, skills, per-company project history, 資格,
 出版, and 自己PR, with automatic page breaks.
 
-| Page 1 | Page 2 |
-| :---: | :---: |
-| ![career-history page 1](./image/career-history-p-1.png) | ![career-history page 2](./image/career-history-p-2.png) |
+![career-history](./image/career-history-p-1.png)
 
 Download: [`image/career-history-sample.pdf`](./image/career-history-sample.pdf)
 
-The Japanese examples are rendered from [`examples/resume.yaml`](./examples/resume.yaml).
+All previews are rendered from [`examples/resume.yaml`](./examples/resume.yaml).
 
 ## Accent color
 
@@ -112,47 +147,18 @@ theme:
 ```
 
 ```bash
-career generate examples/cv.yaml -t cv --accent "#2c6e6e"   # custom
-career generate examples/cv.yaml -t cv --accent none        # monochrome
+career generate resume.yaml -t cv --accent "#2c6e6e"   # custom
+career generate resume.yaml -t cv --accent none        # monochrome
 ```
 
 ## Writing your resume
 
-Start from [`examples/minimal.yaml`](./examples/minimal.yaml), or
-[`examples/resume.yaml`](./examples/resume.yaml) for a fully-commented template.
-
-```yaml
-profile:
-  name: Taro Mihon
-  email: taro.mihon@example.com
-  phone: "+81 90-1234-5678"
-  address:
-    text: Tokyo, Japan
-
-education:
-  - { year: 2014, month: 4, value: "B.Eng., Example University" }
-
-career:
-  summary: |
-    Software engineer focused on backend and cloud infrastructure.
-  skills:
-    - Backend development in Go
-  histories:
-    - company: Example Inc.
-      period: 2018 - Present
-      role: Software Engineer
-      projects:
-        - title: Platform API
-          description: Designed and built the service API.
-          tech: [Go, AWS]
-```
+`career init` writes a starter file with the common fields filled in. For a
+fully populated bilingual sample, see
+[`examples/resume.yaml`](./examples/resume.yaml).
 
 `year` and `month` accept both numbers (`2018`) and strings (`"20XX"`).
 Multi-line fields use YAML block scalars (`|`).
-
-The Japanese 履歴書 also reads a `profile` (with optional `photo`, `gender`,
-`birth_date`) and a `rireki` section (`hobby`, `motivation`, `request`, and so
-on). See `examples/resume.yaml` for the full set of fields.
 
 ## Development
 

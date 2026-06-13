@@ -31,7 +31,7 @@ tools: ## Install developer tools (linter, coverage, shellspec for e2e)
 demo: build ## Regenerate the README demo GIF from docs/demo.tape (needs vhs)
 	@command -v vhs >/dev/null || { echo 'vhs is required: go install github.com/charmbracelet/vhs@latest'; exit 1; }
 	vhs docs/demo.tape
-	-rm -f cv.pdf japanese-resume.pdf career-history.pdf
+	-rm -f cv.pdf japanese-resume.pdf career-history.pdf resume.yaml
 	@echo 'Regenerated image/demo.gif'
 
 clean: ## Clean build and test artifacts
