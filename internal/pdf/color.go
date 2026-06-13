@@ -16,6 +16,10 @@ var (
 	// defaultAccent is a muted slate blue used when no accent is configured. It
 	// stays legible in print and does not read as decorative.
 	defaultAccent = rgb{0x1f, 0x4e, 0x79}
+	// metaLabel is a mid-gray used for the small topic labels (役割・規模, 使用技術)
+	// in the 職務経歴書 so they read as captions and let the black body text stand
+	// out instead of every line looking equally heavy.
+	metaLabel = rgb{0x60, 0x60, 0x60}
 )
 
 // accent resolves a theme accent setting into a color and whether the accent is
