@@ -295,6 +295,7 @@ func (s *shokumuRenderer) prSection() {
 	}
 	s.heading("自己PR")
 	s.bodyText(pr)
+	s.y += 4
 }
 
 // bodyText draws a wrapped paragraph at the body font from the left margin.

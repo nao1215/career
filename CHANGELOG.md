@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Add spacing below the 自己PR section in the work-history so a following section
+  (e.g. リンク) is no longer crowded against it.
+
 ## [v0.2.2] - 2026-06-13
 
 ### Added
