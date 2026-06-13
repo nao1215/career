@@ -2,7 +2,7 @@
 #
 #   career generate resume.yaml --template cv               --output cv.pdf
 #   career generate resume.yaml --template japanese-resume  --output rirekisho.pdf
-#   career generate resume.yaml --template career-history   --output shokureki.pdf
+#   career generate resume.yaml --template work-history     --output shokureki.pdf
 #
 # Text fields accept either a plain scalar (used for every language) or a
 # { ja:, en: } map. The cv template reads "en", the Japanese templates read
@@ -11,7 +11,7 @@
 
 date: __DATE__   # 作成日。career init が今日の日付に置き換えます。
 
-# Accent color for cv / career-history. "" = default, "none" = monochrome.
+# Accent color for cv / work-history. "" = default, "none" = monochrome.
 theme:
   accent: ""
 

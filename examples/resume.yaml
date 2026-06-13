@@ -2,7 +2,7 @@
 #
 #   career generate examples/resume.yaml --template cv               --output cv.pdf
 #   career generate examples/resume.yaml --template japanese-resume  --output rirekisho.pdf
-#   career generate examples/resume.yaml --template career-history   --output shokureki.pdf
+#   career generate examples/resume.yaml --template work-history     --output shokureki.pdf
 #
 # Text fields can be written either as a plain scalar (used for every language)
 # or as a { ja:, en: } map. The cv template reads "en", the Japanese templates
