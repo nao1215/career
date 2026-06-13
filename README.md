@@ -6,8 +6,7 @@
 [![reviewdog](https://github.com/nao1215/career/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/nao1215/career/actions/workflows/reviewdog.yml)
 
 career generates résumé PDFs from a single YAML file. Write your career once in
-plain text, keep it under version control, and render a polished PDF with one
-command.
+plain text, keep it under version control, and render the PDF with one command.
 
 One file holds every document. Text fields can carry more than one language, so
 the same file produces an English CV and the Japanese formats, each in the right
