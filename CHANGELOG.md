@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.0] - 2026-06-13
+
+### Added
+
+- Japanese line-breaking rules (禁則処理) for wrapped text: a line no longer
+  begins with a closing bracket or sentence punctuation, nor ends with an opening
+  bracket; the offending character is pushed to the adjacent line.
+- Soft line wrapping in text fields: a single newline is treated as a soft wrap
+  (CJK lines joined with no space, Latin words with one) and a blank line is an
+  intentional paragraph break, so long fields can be wrapped in the source for
+  readability without forcing breaks in the output.
+
+### Changed
+
+- Reworked the `work-history` and `cv` layout for readability: entries align on a
+  consistent indentation rail, metadata captions (役職 / 役割・規模 / 使用技術 /
+  Tech) render in gray in the body face, entry markers are tinted with the accent
+  color, and each project is ordered role, tech, then description.
+- README: added a preview gallery of the generated documents right after the demo
+  GIF (images link to the sample PDFs) and condensed the Templates section into a
+  single table.
+- The `career init` scaffold comment is now written in English.
+
 ## [v0.1.0] - 2026-06-13
 
 Initial release.
@@ -39,5 +62,6 @@ Initial release.
   setup.
 - Example resume files, a vhs demo GIF, and a shellspec end-to-end suite.
 
-[Unreleased]: https://github.com/nao1215/career/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/nao1215/career/compare/v0.2.0...HEAD
+[v0.2.0]: https://github.com/nao1215/career/compare/v0.1.0...v0.2.0
 [v0.1.0]: https://github.com/nao1215/career/releases/tag/v0.1.0
