@@ -7,6 +7,9 @@
 # Text fields can be written either as a plain scalar (used for every language)
 # or as a { ja:, en: } map. The cv template reads "en", the Japanese templates
 # read "ja", and either falls back to whatever is present.
+#
+# Long fields may be wrapped over several lines for readability; the renderer
+# re-flows them. A blank line is an intentional paragraph break.
 
 # 作成日（履歴書・職務経歴書の右上）。CVでは使われません。
 date: 2026年6月13日現在
@@ -20,8 +23,8 @@ profile:
     ja: 見本 太郎
     en: Taro Mihon
   name_kana: みほん たろう       # 履歴書のふりがな（日本語のみ）
-  birth_date: 1992年5月10日      # 履歴書のみ
-  age: 満 34 歳
+  birth_date: 1990年5月10日      # 履歴書のみ
+  age: 満 36 歳
   gender: 男
   email: taro.mihon@example.com
   phone: "+81 90-1234-5678"
@@ -35,12 +38,12 @@ profile:
 
 # 学歴（履歴書・CV）。
 education:
-  - year: 2011
+  - year: 2009
     month: 4
     value:
       ja: 見本工科大学 工学部 情報工学科 入学
       en: "Entered Mihon Institute of Technology, B.Eng. in Information Engineering"
-  - year: 2015
+  - year: 2013
     month: 3
     value:
       ja: 見本工科大学 工学部 情報工学科 卒業
@@ -48,7 +51,9 @@ education:
 
 # 職歴（履歴書の学歴・職歴欄）。
 work:
-  - { year: 2015, month: 4, value: 株式会社サンプルソフト 入社 }
+  - { year: 2013, month: 4, value: 見本デバイス株式会社 入社 }
+  - { year: 2016, month: 3, value: 見本デバイス株式会社 退職 }
+  - { year: 2016, month: 4, value: 株式会社サンプルソフト 入社 }
   - { year: 2020, month: 3, value: 株式会社サンプルソフト 退職 }
   - { year: 2020, month: 4, value: クラウドテック株式会社 入社 }
   - { value: 現在に至る }
@@ -57,16 +62,19 @@ work:
 licenses:
   - { year: 2013, month: 6,  value: 普通自動車第一種運転免許 取得 }
   - { year: 2015, month: 10, value: 応用情報技術者試験 取得 }
+  - { year: 2018, month: 7,  value: TOEIC 公開テスト スコア850点 取得 }
   - { year: 2022, month: 8,  value: AWS Certified Solutions Architect – Associate 取得 }
+  - { year: 2023, month: 5,  value: AWS Certified Developer – Associate 取得 }
 
 # 履歴書だけで使う項目（日本語）。
 rireki:
   commuting_time: 45分
-  dependents: １人
+  dependents: ２人
   spouse: 有
-  supporting_spouse: 無
+  supporting_spouse: 有
   hobby: |
-    読書、ランニング、個人開発。
+    読書、ランニング、個人開発。休日はオープンソースへのコントリビュートを
+    楽しんでいます。
   motivation: |
     貴社の技術への取り組みと、開発文化に魅力を感じ志望しました。
   request: |
@@ -76,49 +84,152 @@ rireki:
 career:
   summary:
     ja: |
-      Webアプリケーション開発を中心に約10年の経験を持つソフトウェアエンジニアです。
-      バックエンドからインフラまでを一貫して担当してきました。
+      Web アプリケーション開発を中心に約12年の経験を持つソフトウェアエンジニアです。
+      組み込み開発からキャリアを始め、受託開発を経て、現在は SaaS プロダクトの
+      バックエンドとクラウド基盤を一貫して担当しています。
+
+      要件定義から運用までを一人称で進められること、チームの開発プロセス改善を
+      得意としています。
     en: |
-      Software engineer with about 10 years of experience in web application
-      development, comfortable across the stack from backend to cloud.
+      Software engineer with about 12 years of experience centered on web
+      application development. Starting in embedded systems and moving through
+      contract development, I now own the backend and cloud platform of a SaaS
+      product end to end.
+
+      I am comfortable driving work from requirements through to operation, and I
+      enjoy improving a team's development process.
 
   skills:
     - { ja: Go / TypeScript によるサーバーサイド開発, en: Backend development in Go and TypeScript }
-    - { ja: AWS を用いたクラウド設計・運用, en: Cloud design and operation on AWS }
-    - { ja: CI/CD・テスト自動化の整備, en: CI/CD and test automation }
+    - { ja: AWS（ECS / Lambda / DynamoDB / CloudFormation 等）を用いた設計・構築・運用, en: Design, build and operation on AWS (ECS / Lambda / DynamoDB / CloudFormation) }
+    - { ja: マイクロサービスの設計・移行とリファクタリング, en: Microservice design, migration and refactoring }
+    - { ja: CI/CD・テスト自動化・可観測性の整備, en: CI/CD, test automation and observability }
+    - { ja: テクニカル／エンジニアリングマネジメント（要件調整・採用・育成・1on1）, en: Technical and engineering management (requirements, hiring, mentoring, 1on1) }
+    - { ja: 組み込み Linux 開発（カーネル、デバイスドライバ）, en: Embedded Linux development (kernel, device drivers) }
 
   histories:
     - company: { ja: クラウドテック株式会社, en: CloudTech Inc. }
       period: { ja: 2020年4月 - 現在, en: Apr 2020 - Present }
-      role: { ja: バックエンドエンジニア, en: Backend Engineer }
-      summary: { ja: SaaSプロダクトの開発・運用に従事。, en: Development and operation of a SaaS product. }
+      role: { ja: バックエンドエンジニア / テックリード, en: Backend Engineer / Tech Lead }
+      summary:
+        ja: SaaS プロダクトの開発・運用に従事し、バックエンドとクラウド基盤を担当。
+        en: Development and operation of a SaaS product, owning the backend and cloud platform.
       projects:
-        - title: { ja: 業務管理SaaSのAPI開発, en: Business management SaaS API }
+        - title: { ja: 業務管理 SaaS の API 開発, en: Business management SaaS API }
           period: { ja: 2020年4月 - 現在, en: Apr 2020 - Present }
           role: { ja: バックエンド（5名）, en: Backend (team of 5) }
           description:
-            ja: GoによるAPI設計・実装とAWS上の運用を担当し、可用性と性能を改善。
-            en: Designed and built APIs in Go and operated the AWS infrastructure, improving availability and performance.
+            ja: |
+              Go による API の設計・実装と、AWS 上のインフラ運用を担当。可用性と性能を
+              継続的に改善し、増加するトラフィックに耐えるアーキテクチャへ段階的に移行した。
+            en: |
+              Designed and built APIs in Go and operated the AWS infrastructure,
+              continuously improving availability and performance and gradually
+              evolving the architecture to handle growing traffic.
           tech: [Go, AWS, PostgreSQL, Terraform]
+        - title: { ja: 課金・サブスクリプション基盤の構築, en: Billing and subscription platform }
+          period: { ja: 2021年10月 - 2022年6月, en: Oct 2021 - Jun 2022 }
+          role: { ja: 設計・実装リード, en: Design and implementation lead }
+          description:
+            ja: |
+              サブスクリプション課金基盤を新規に設計・構築。決済代行サービスと連携し、
+              プラン変更や日割り計算などの複雑な要件を整理してドメインモデルに落とし込んだ。
+            en: |
+              Designed and built a new subscription billing platform, integrating a
+              payment provider and modeling complex requirements such as plan
+              changes and proration.
+          tech: [Go, AWS Lambda, DynamoDB, Stripe]
+        - title: { ja: 監視・SLO 整備とインシデント対応, en: Observability and SLOs }
+          period: { ja: 2022年7月 - 現在, en: Jul 2022 - Present }
+          role: { ja: SRE 兼務, en: SRE (part-time) }
+          description:
+            ja: |
+              SLO を定義し、ダッシュボードとアラートを整備。インシデント対応のフローを
+              標準化し、平均復旧時間を短縮した。
+            en: |
+              Defined SLOs, built dashboards and alerts, standardized the incident
+              response flow, and reduced the mean time to recovery.
+          tech: [Datadog, Terraform, AWS]
 
     - company: { ja: 株式会社サンプルソフト, en: SampleSoft Co., Ltd. }
-      period: { ja: 2015年4月 - 2020年3月, en: Apr 2015 - Mar 2020 }
+      period: { ja: 2016年4月 - 2020年3月, en: Apr 2016 - Mar 2020 }
       role: { ja: ソフトウェアエンジニア, en: Software Engineer }
-      summary: { ja: 受託のWebアプリケーション開発に従事。, en: Web application development for client projects. }
+      summary:
+        ja: 受託の Web アプリケーション開発に従事し、複数案件の設計から運用までを担当。
+        en: Web application development for client projects, owning design through operation across several engagements.
       projects:
-        - title: { ja: ECサイトの開発・保守, en: E-commerce site development and maintenance }
-          period: { ja: 2015年4月 - 2020年3月, en: Apr 2015 - Mar 2020 }
-          role: { ja: フルスタック, en: Full-stack }
+        - title: { ja: EC サイトの開発・保守, en: E-commerce site development and maintenance }
+          period: { ja: 2016年4月 - 2018年3月, en: Apr 2016 - Mar 2018 }
+          role: { ja: フルスタック（4名）, en: Full-stack (team of 4) }
           description:
-            ja: 要件定義から実装・テスト・リリースまでを担当。
-            en: Owned the full cycle from requirements to implementation, testing, and release.
+            ja: |
+              要件定義から実装・テスト・リリースまでを担当。商品検索やカート機能の改善を
+              通じて、コンバージョン率の向上に貢献した。
+            en: |
+              Owned the full cycle from requirements to release, and improved
+              product search and cart features to lift the conversion rate.
           tech: [TypeScript, Node.js, MySQL]
+        - title: { ja: レシピアプリのバックエンド開発, en: Recipe app backend }
+          period: { ja: 2018年4月 - 2019年6月, en: Apr 2018 - Jun 2019 }
+          role: { ja: バックエンド, en: Backend }
+          description:
+            ja: |
+              スマートフォン向けレシピアプリのバックエンドをフルスクラッチで開発。
+              大量のレシピデータを扱うバッチ処理と API を実装した。
+            en: |
+              Built the backend of a mobile recipe app from scratch, implementing
+              batch jobs and APIs that handle large recipe datasets.
+          tech: [Go, AWS, MySQL]
+        - title: { ja: 社内向け管理画面の刷新, en: Internal admin console rebuild }
+          period: { ja: 2019年7月 - 2020年3月, en: Jul 2019 - Mar 2020 }
+          role: { ja: フロントエンド兼バックエンド, en: Front-end and back-end }
+          description:
+            ja: |
+              レガシーな管理画面を段階的に刷新。フロントエンドを React へ移行し、
+              運用担当者の作業時間を削減した。
+            en: |
+              Incrementally rebuilt a legacy admin console, migrating the front-end
+              to React and reducing operator workload.
+          tech: [TypeScript, React, Go]
+
+    - company: { ja: 見本デバイス株式会社, en: Mihon Devices Inc. }
+      period: { ja: 2013年4月 - 2016年3月, en: Apr 2013 - Mar 2016 }
+      role: { ja: 組み込みソフトウェアエンジニア, en: Embedded Software Engineer }
+      summary:
+        ja: 組み込み機器のファームウェアおよびデバイスドライバ開発に従事。
+        en: Firmware and device-driver development for embedded equipment.
+      projects:
+        - title: { ja: ネットワーク機器のファームウェア開発, en: Network device firmware }
+          period: { ja: 2013年4月 - 2015年3月, en: Apr 2013 - Mar 2015 }
+          role: { ja: ファームウェア, en: Firmware }
+          description:
+            ja: |
+              ネットワーク機器のファームウェアを C 言語で開発。限られたメモリ環境での
+              最適化と、長期運用に耐える品質づくりに取り組んだ。
+            en: |
+              Developed network device firmware in C, optimizing for constrained
+              memory and building quality for long-term operation.
+          tech: [C, RTOS]
+        - title: { ja: Linux デバイスドライバの実装, en: Linux device driver development }
+          period: { ja: 2015年4月 - 2016年3月, en: Apr 2015 - Mar 2016 }
+          role: { ja: デバイスドライバ, en: Device drivers }
+          description:
+            ja: |
+              新規ボード向けの Linux デバイスドライバを実装。カーネルの調査とデバッグを
+              通じて、ハードウェアの安定動作を実現した。
+            en: |
+              Implemented Linux device drivers for a new board, investigating and
+              debugging the kernel to achieve stable hardware operation.
+          tech: [C, Linux Kernel]
 
   certifications:
     - { ja: AWS Certified Solutions Architect – Associate, en: AWS Certified Solutions Architect – Associate }
+    - { ja: AWS Certified Developer – Associate, en: AWS Certified Developer – Associate }
     - { ja: 応用情報技術者試験, en: Applied Information Technology Engineer (Japan) }
+    - { ja: TOEIC 公開テスト 850点, en: TOEIC 850 }
 
   publications:
+    - { ja: 技術カンファレンスでマイクロサービス移行について登壇, en: Spoke on microservice migration at a tech conference }
     - { ja: 社内技術ブログでバックエンド設計の記事を執筆, en: Authored internal engineering blog posts on backend design }
 
   links:
@@ -128,5 +239,12 @@ career:
   self_pr:
     ja: |
       設計から運用までを一人称で完遂することを得意とし、継続的な学習を信条としています。
+
+      組み込みからクラウドまで幅広いレイヤーの経験を活かし、チームの技術的な意思決定に
+      貢献できます。
     en: |
-      I own work end to end from design to operation, and I value continuous learning.
+      I own work end to end from design to operation, and I value continuous
+      learning.
+
+      With experience spanning embedded systems to the cloud, I can contribute to a
+      team's technical decisions across the stack.

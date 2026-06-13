@@ -51,11 +51,11 @@ func (s *shokumuRenderer) render() {
 	s.header()
 	s.summarySection()
 	s.skillsSection()
-	s.listSection("リンク", s.res.Career.Links)
 	s.historySection()
 	s.listSection("資格", s.res.Career.Certifications)
 	s.listSection("出版・登壇", s.res.Career.Publications)
 	s.prSection()
+	s.listSection("リンク", s.res.Career.Links)
 }
 
 // newPage starts a fresh page and resets the cursor to the top margin.
@@ -155,8 +155,16 @@ func (s *shokumuRenderer) historySection() {
 
 // companyDivider draws a short centered rule between company entries, with room
 // above and below so it reads as a separator rather than crowding either block.
+// The rule is drawn only when the rule and the start of the next company both
+// fit on the current page. Otherwise the next company is moved to the top of a
+// fresh page with no rule, so a company that opens a page never carries a divider
+// and one is never left dangling at the foot of a page.
 func (s *shokumuRenderer) companyDivider() {
-	s.ensure(skLineH * 2)
+	const dividerSpace = 5 + 9
+	if s.y+dividerSpace+skLineH*3 > skBottom {
+		s.newPage()
+		return
+	}
 	s.y += 5
 	s.c.centerRule(s.y, 24, divider)
 	s.y += 9
