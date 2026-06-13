@@ -240,6 +240,32 @@ func TestWrapBreaksLongText(t *testing.T) {
 	}
 }
 
+// TestFold checks that single newlines are soft-joined (no space between CJK,
+// one space between Latin) while a blank line is kept as a paragraph break.
+func TestFold(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"cjk soft join", "組み込み開発から\n始まりました。", "組み込み開発から始まりました。"},
+		{"latin soft join", "web application\ndevelopment", "web application development"},
+		{"cjk-latin boundary", "Go を\n使う", "Go を使う"},
+		{"blank line is a paragraph break", "前半の文。\n\n後半の文。", "前半の文。\n後半の文。"},
+		{"per-line indentation is trimmed", "  あいう\n  えお", "あいうえお"},
+		{"single line unchanged", "そのまま", "そのまま"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if got := fold(tt.in); got != tt.want {
+				t.Errorf("fold(%q) = %q, want %q", tt.in, got, tt.want)
+			}
+		})
+	}
+}
+
 // TestWrapLineStartKinsoku checks 行頭禁則: no wrapped line may begin with a
 // closing bracket or sentence punctuation.
 func TestWrapLineStartKinsoku(t *testing.T) {

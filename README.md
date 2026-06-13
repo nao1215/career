@@ -142,6 +142,22 @@ career:
 `career generate -t cv` renders the English résumé while `-t work-history`
 renders the Japanese 職務経歴書 from the same source.
 
+### Line breaks in text
+
+Long fields can be wrapped over several lines for readability — the renderer
+re-flows them to the page width, joining Japanese lines with no space and Latin
+words with a single space. A **blank line** is an intentional paragraph break.
+
+```yaml
+career:
+  summary:
+    ja: |
+      組み込みソフトウェア開発からキャリアを始め、サーバーサイド開発を経て、
+      現在はバックエンド開発とエンジニアリングマネジメントを担当しています。
+
+      要件定義からテストまでの全工程と、外注管理・採用・教育の経験があります。
+```
+
 ## Templates
 
 Templates are entries in a small registry, so a new layout, paper size, or
