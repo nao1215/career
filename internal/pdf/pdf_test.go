@@ -252,7 +252,8 @@ func TestFold(t *testing.T) {
 		{"cjk soft join", "組み込み開発から\n始まりました。", "組み込み開発から始まりました。"},
 		{"latin soft join", "web application\ndevelopment", "web application development"},
 		{"cjk-latin boundary", "Go を\n使う", "Go を使う"},
-		{"blank line is a paragraph break", "前半の文。\n\n後半の文。", "前半の文。\n後半の文。"},
+		{"blank line is kept as a paragraph gap", "前半の文。\n\n後半の文。", "前半の文。\n\n後半の文。"},
+		{"consecutive blank lines collapse to one gap", "前半。\n\n\n後半。", "前半。\n\n後半。"},
 		{"per-line indentation is trimmed", "  あいう\n  えお", "あいうえお"},
 		{"single line unchanged", "そのまま", "そのまま"},
 	}

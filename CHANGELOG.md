@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- A blank line between paragraphs in a text field is now kept as a blank line of
+  vertical space in the output, instead of collapsing to a plain line break, so
+  the paragraph gap written in the source is visible.
+
 ## [v0.2.0] - 2026-06-13
 
 ### Added

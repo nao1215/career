@@ -178,12 +178,13 @@ func (c *canvas) wrap(s string, maxWidth float64) []string {
 	return lines
 }
 
-// fold normalizes authored text for rendering. A blank line starts a new
-// paragraph, kept as a hard break in the output; a single newline is treated as
-// a soft wrap, so consecutive lines are joined — with no space between CJK
+// fold normalizes authored text for rendering. One or more blank lines separate
+// paragraphs and are preserved as a single blank line in the output, so the
+// paragraph gap the author wrote is visible; a single newline is treated as a
+// soft wrap, so consecutive lines are joined — with no space between CJK
 // characters and a single space between Latin words. This lets the source YAML
-// wrap long lines for readability without forcing breaks in the rendered
-// document, while an intentional break is written as a blank line.
+// wrap long lines for readability while an intentional gap is written as a blank
+// line. wrap renders the empty line between paragraphs as vertical space.
 func fold(s string) string {
 	var paragraphs []string
 	var cur []string
@@ -202,7 +203,9 @@ func fold(s string) string {
 		cur = append(cur, line)
 	}
 	flush()
-	return strings.Join(paragraphs, "\n")
+	// Join with a blank line so wrap emits one empty line — a paragraph gap —
+	// between paragraphs. Consecutive source blank lines collapse to one gap.
+	return strings.Join(paragraphs, "\n\n")
 }
 
 // joinSoftLines joins soft-wrapped lines of one paragraph: no space is inserted
