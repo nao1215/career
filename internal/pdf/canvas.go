@@ -219,13 +219,20 @@ func fold(s string) string {
 	return strings.Join(paragraphs, "\n\n")
 }
 
-// joinSoftLines joins soft-wrapped lines of one paragraph: no space is inserted
-// where either side of the join is a CJK character, a single space otherwise.
+// joinSoftLines joins soft-wrapped lines of one paragraph: a line that begins a
+// list item keeps its own line (a hard break), otherwise no space is inserted
+// where either side of the join is a CJK character and a single space elsewhere.
+// This lets a free-text field mix a wrapped sentence with a bullet list.
 func joinSoftLines(lines []string) string {
 	var b strings.Builder
 	for i, line := range lines {
-		if i > 0 && !isCJK(lastRune(lines[i-1])) && !isCJK(firstRune(line)) {
-			b.WriteByte(' ')
+		if i > 0 {
+			switch {
+			case isListItem(line):
+				b.WriteByte('\n')
+			case !isCJK(lastRune(lines[i-1])) && !isCJK(firstRune(line)):
+				b.WriteByte(' ')
+			}
 		}
 		b.WriteString(line)
 	}
@@ -237,6 +244,23 @@ func firstRune(s string) rune {
 		return r
 	}
 	return 0
+}
+
+// isListItem reports whether a line begins a bullet list item. CJK and bullet
+// glyphs count on their own; ASCII "-" and "*" must be followed by a space so an
+// ordinary hyphenated word is not mistaken for a bullet.
+func isListItem(s string) bool {
+	rs := []rune(s)
+	if len(rs) == 0 {
+		return false
+	}
+	switch rs[0] {
+	case '・', '•', '－', '‐':
+		return true
+	case '-', '*':
+		return len(rs) >= 2 && rs[1] == ' '
+	}
+	return false
 }
 
 func lastRune(s string) rune {

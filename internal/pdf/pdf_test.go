@@ -257,6 +257,7 @@ func TestFold(t *testing.T) {
 		{"consecutive blank lines collapse to one gap", "前半。\n\n\n後半。", "前半。\n\n後半。"},
 		{"per-line indentation is trimmed", "  あいう\n  えお", "あいうえお"},
 		{"single line unchanged", "そのまま", "そのまま"},
+		{"list items keep their own line", "前置き。\n・項目1\n・項目2", "前置き。\n・項目1\n・項目2"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

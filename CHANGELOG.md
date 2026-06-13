@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Text fields keep a line that begins with a bullet (`・`, `-`, `*`, `•`) as its
+  own list item, so a field can mix prose with a list — used by the 履歴書 hobby,
+  motivation, and request boxes.
+
 ### Fixed
 
 - Add spacing below the 自己PR section in the work-history so a following section
   (e.g. リンク) is no longer crowded against it.
+- Narrow `.gitignore`'s `coverage.*` to `coverage.html` so it no longer also
+  ignores files such as a `coverage.yml` workflow.
 
 ## [v0.2.2] - 2026-06-13
 
