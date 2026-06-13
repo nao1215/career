@@ -212,9 +212,35 @@ func (c *canvas) wrapParagraph(paragraph string, maxWidth float64) []string {
 
 // canBreakBefore reports whether a line may break between prev and next: after a
 // space, or adjacent to a CJK character (which carries no spaces of its own).
+//
+// Japanese line-breaking rules (禁則処理) are applied so a line never ends or
+// begins on a character that must stay attached to its neighbour: closing
+// brackets, sentence punctuation, small kana and the prolonged sound mark may
+// not start a line (行頭禁則), and opening brackets may not end one (行末禁則).
+// Suppressing the break here pushes the offending character onto the next or
+// previous line (追い出し).
 func canBreakBefore(prev, next rune) bool {
+	if isLineStartProhibited(next) || isLineEndProhibited(prev) {
+		return false
+	}
 	return prev == ' ' || isCJK(prev) || isCJK(next)
 }
+
+// lineStartProhibited holds characters that may not begin a line (行頭禁則):
+// closing brackets, sentence-ending and joining punctuation, small kana, and
+// the prolonged sound mark.
+const lineStartProhibited = "、。，．・：；！？）］｝」』】〕〉》〙〗〟ー゠–—%‰℃ヽヾゝゞ々" +
+	"ぁぃぅぇぉっゃゅょゎゕゖ" +
+	"ァィゥェォッャュョヮヵヶ" +
+	"。．，、！？）」』】〕’”｠"
+
+// lineEndProhibited holds characters that may not end a line (行末禁則): opening
+// brackets and quotation marks.
+const lineEndProhibited = "（［｛「『【〔〈《〘〖〝（［｛「『【〔‘“｟"
+
+func isLineStartProhibited(r rune) bool { return strings.ContainsRune(lineStartProhibited, r) }
+
+func isLineEndProhibited(r rune) bool { return strings.ContainsRune(lineEndProhibited, r) }
 
 // isCJK reports whether r is a CJK ideograph, kana, or CJK punctuation that may
 // start or end a line.
