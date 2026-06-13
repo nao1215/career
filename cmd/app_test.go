@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"bytes"
+	"image"
+	"image/png"
 	"os"
 	"path/filepath"
 	"strings"
@@ -176,6 +178,88 @@ func TestGenerateOutputWithMultipleFails(t *testing.T) {
 	}
 	if !strings.Contains(stderr.String(), "--output cannot be used with multiple") {
 		t.Errorf("stderr = %q", stderr.String())
+	}
+}
+
+// writeTestPNG creates a w×h PNG for photo tests.
+func writeTestPNG(t *testing.T, path string, w, h int) {
+	t.Helper()
+	img := image.NewRGBA(image.Rect(0, 0, w, h))
+	f, err := os.Create(path) //nolint:gosec // test path
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	if err := png.Encode(f, img); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGeneratePhotoFlag(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+	writeTestPNG(t, filepath.Join(dir, "face.png"), 300, 400)
+
+	app, _, stderr := newTestApp(dir)
+	code := app.Run([]string{"generate", "resume.yaml", "-t", "japanese-resume", "--photo", "face.png", "-o", "out.pdf"})
+	if code != 0 {
+		t.Fatalf("generate exit = %d (stderr=%q)", code, stderr.String())
+	}
+	assertPDFFile(t, filepath.Join(dir, "out.pdf"))
+	if stderr.Len() != 0 {
+		t.Errorf("unexpected stderr for a 3:4 photo: %q", stderr.String())
+	}
+}
+
+func TestGeneratePhotoWrongAspectWarns(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+	writeTestPNG(t, filepath.Join(dir, "wide.png"), 400, 300)
+
+	app, _, stderr := newTestApp(dir)
+	code := app.Run([]string{"generate", "resume.yaml", "-t", "japanese-resume", "--photo", "wide.png", "-o", "out.pdf"})
+	if code != 0 {
+		t.Fatalf("generate exit = %d (stderr=%q)", code, stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "3:4") {
+		t.Errorf("expected an aspect-ratio warning, got %q", stderr.String())
+	}
+	assertPDFFile(t, filepath.Join(dir, "out.pdf"))
+}
+
+func TestGeneratePhotoMissingWarns(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+
+	app, _, stderr := newTestApp(dir)
+	code := app.Run([]string{"generate", "resume.yaml", "-t", "japanese-resume", "--photo", "nope.png", "-o", "out.pdf"})
+	if code != 0 {
+		t.Fatalf("generate exit = %d (stderr=%q)", code, stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "cannot read photo") {
+		t.Errorf("expected a missing-photo warning, got %q", stderr.String())
+	}
+	// Still produces the PDF with a placeholder.
+	assertPDFFile(t, filepath.Join(dir, "out.pdf"))
+}
+
+func TestGenerateCVIgnoresPhoto(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+	writeTestPNG(t, filepath.Join(dir, "wide.png"), 400, 300)
+
+	app, _, stderr := newTestApp(dir)
+	// cv does not use a photo, so even a bad-aspect photo must not warn.
+	code := app.Run([]string{"generate", "resume.yaml", "-t", "cv", "--photo", "wide.png", "-o", "cv.pdf"})
+	if code != 0 {
+		t.Fatalf("generate exit = %d (stderr=%q)", code, stderr.String())
+	}
+	if stderr.Len() != 0 {
+		t.Errorf("cv should ignore the photo, got stderr %q", stderr.String())
 	}
 }
 

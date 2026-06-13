@@ -28,7 +28,7 @@ func RenderRirekisho(res *resume.Resume, opts options) ([]byte, error) {
 		return nil, err
 	}
 
-	rireki := &rirekishoRenderer{c: c, res: res, lang: opts.lang}
+	rireki := &rirekishoRenderer{c: c, res: res, lang: opts.lang, photo: opts.photo}
 	rireki.page1()
 	rireki.page2()
 
@@ -36,9 +36,10 @@ func RenderRirekisho(res *resume.Resume, opts options) ([]byte, error) {
 }
 
 type rirekishoRenderer struct {
-	c    *canvas
-	res  *resume.Resume
-	lang string
+	c     *canvas
+	res   *resume.Resume
+	lang  string
+	photo string // resolved portrait path, or ""
 }
 
 func (r *rirekishoRenderer) page1() {
@@ -177,9 +178,14 @@ func (r *rirekishoRenderer) photoBox() {
 		w = 30.0
 		h = 40.0
 	)
-	if r.res.Profile.Photo != "" {
-		if err := c.pdf.Image(r.res.Profile.Photo, x, y, &gopdf.Rect{W: w, H: h}); err == nil {
-			return
+	if r.photo != "" {
+		if iw, ih, err := photoDims(r.photo); err == nil {
+			// Fit the image inside the frame without distortion and center it.
+			fw, fh, dx, dy := containRect(iw, ih, w, h)
+			if err := c.pdf.Image(r.photo, x+dx, y+dy, &gopdf.Rect{W: fw, H: fh}); err == nil {
+				c.rect(x, y, w, h) // frame around the (possibly letterboxed) photo
+				return
+			}
 		}
 		// Fall through to the placeholder when the image cannot be loaded.
 	}

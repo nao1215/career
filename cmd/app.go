@@ -134,9 +134,10 @@ func (a *App) runGenerate(args []string) int {
 	output := flagSet.String("output", "", "output PDF path (only valid with a single template; defaults to the template's name)")
 	flagSet.StringVar(output, "o", "", "shorthand for --output")
 	accentFlag := flagSet.String("accent", "", "accent color for cv/career-history: #rrggbb or \"none\" (overrides theme.accent)")
+	photoFlag := flagSet.String("photo", "", "portrait image for the 履歴書 (overrides profile.photo)")
 	flagSet.Usage = func() {
 		writeLine(flagSet.Output(), "Render a resume YAML file into one or more CV / 履歴書 / 職務経歴書 PDFs.")
-		writeLine(flagSet.Output(), "Usage: career generate [INPUT] [--template NAME ...] [--input PATH] [--output PATH] [--accent COLOR]")
+		writeLine(flagSet.Output(), "Usage: career generate [INPUT] [--template NAME ...] [--input PATH] [--output PATH] [--accent COLOR] [--photo IMG]")
 		writeLine(flagSet.Output(), "Defaults to the cv template. Use --template all, or repeat/comma-separate names, for several at once.")
 		writeLine(flagSet.Output(), "Run \"career templates\" to list the available templates.")
 		printFlagDefaults(flagSet.Output(), flagSet)
@@ -182,12 +183,28 @@ func (a *App) runGenerate(args []string) int {
 		accentSetting = *accentFlag
 	}
 
+	// Resolve and validate the portrait only when a selected template uses one.
+	photoPath := ""
+	if templatesUsePhoto(tmpls) {
+		photoPath = a.resolvePhoto(*photoFlag, res.Profile.Photo, inputPath)
+		if photoPath != "" {
+			ok, warn := pdf.CheckPhoto(photoPath)
+			switch {
+			case !ok:
+				writef(a.stderr, "warning: cannot read photo %q; using a placeholder\n", photoPath)
+				photoPath = ""
+			case warn != "":
+				writef(a.stderr, "warning: %s\n", warn)
+			}
+		}
+	}
+
 	for _, tmpl := range tmpls {
 		outputPath := *output
 		if outputPath == "" {
 			outputPath = tmpl.DefaultOutput
 		}
-		data, err := tmpl.Render(res, accentSetting)
+		data, err := tmpl.Render(res, pdf.RenderOptions{Accent: accentSetting, Photo: photoPath})
 		if err != nil {
 			writeLine(a.stderr, err)
 			return 1
@@ -275,6 +292,32 @@ func (a *App) resolvePath(path string) string {
 		return path
 	}
 	return filepath.Join(a.workDir, path)
+}
+
+// resolvePhoto picks the portrait path. A --photo flag wins and resolves against
+// the working directory; otherwise profile.photo from the YAML resolves against
+// the YAML file's own directory, so a relative path points next to the document.
+func (a *App) resolvePhoto(flagVal, yamlVal, inputPath string) string {
+	if flagVal != "" {
+		return a.resolvePath(flagVal)
+	}
+	if yamlVal == "" {
+		return ""
+	}
+	if filepath.IsAbs(yamlVal) {
+		return yamlVal
+	}
+	return filepath.Join(filepath.Dir(a.resolvePath(inputPath)), yamlVal)
+}
+
+// templatesUsePhoto reports whether any of the templates renders a portrait.
+func templatesUsePhoto(tmpls []pdf.Template) bool {
+	for _, t := range tmpls {
+		if t.UsesPhoto() {
+			return true
+		}
+	}
+	return false
 }
 
 func (a *App) printRootHelp(w io.Writer) {

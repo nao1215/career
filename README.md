@@ -163,6 +163,27 @@ career generate resume.yaml -t cv --accent "#2c6e6e"   # custom
 career generate resume.yaml -t cv --accent none        # monochrome
 ```
 
+## Photo (履歴書)
+
+Only the `japanese-resume` template has a photo frame (the JIS 3:4, 30×40mm box).
+Set it in YAML or on the command line:
+
+```yaml
+profile:
+  photo: face.jpg   # JPEG or PNG; resolved relative to this YAML file
+```
+
+```bash
+career generate resume.yaml -t japanese-resume --photo face.jpg
+```
+
+A `profile.photo` path is resolved relative to the YAML file, while `--photo`
+(which overrides it) is resolved relative to the current directory. The photo is
+fitted into the frame without distortion; if its aspect ratio is not 3:4 it is
+centered with margins and a warning suggests cropping. A missing or unreadable
+file falls back to the placeholder box with a warning. A 3:4 sample lives at
+[`examples/sample-photo.png`](./examples/sample-photo.png).
+
 ## Writing your resume
 
 `career init` writes a starter file with the common fields filled in. For a
