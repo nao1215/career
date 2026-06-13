@@ -239,3 +239,51 @@ func TestWrapBreaksLongText(t *testing.T) {
 		t.Fatalf("wrap() returned %d lines, want >= 2", len(lines))
 	}
 }
+
+// TestWrapLineStartKinsoku checks 行頭禁則: no wrapped line may begin with a
+// closing bracket or sentence punctuation.
+func TestWrapLineStartKinsoku(t *testing.T) {
+	t.Parallel()
+	c, err := newCanvas()
+	if err != nil {
+		t.Fatalf("newCanvas() error = %v", err)
+	}
+	c.pdf.AddPage()
+	c.setFont("mincho", 10)
+
+	s := strings.Repeat("あいう。えお、", 60)
+	lines := c.wrap(s, 30)
+	if len(lines) < 2 {
+		t.Fatalf("wrap() returned %d lines, want >= 2", len(lines))
+	}
+	for _, line := range lines {
+		r := []rune(line)
+		if len(r) > 0 && isLineStartProhibited(r[0]) {
+			t.Errorf("line begins with prohibited rune %q: %q", string(r[0]), line)
+		}
+	}
+}
+
+// TestWrapLineEndKinsoku checks 行末禁則: no wrapped line may end with an opening
+// bracket.
+func TestWrapLineEndKinsoku(t *testing.T) {
+	t.Parallel()
+	c, err := newCanvas()
+	if err != nil {
+		t.Fatalf("newCanvas() error = %v", err)
+	}
+	c.pdf.AddPage()
+	c.setFont("mincho", 10)
+
+	s := strings.Repeat("あい「うえ」お", 60)
+	lines := c.wrap(s, 30)
+	if len(lines) < 2 {
+		t.Fatalf("wrap() returned %d lines, want >= 2", len(lines))
+	}
+	for _, line := range lines {
+		r := []rune(line)
+		if len(r) > 0 && isLineEndProhibited(r[len(r)-1]) {
+			t.Errorf("line ends with prohibited rune %q: %q", string(r[len(r)-1]), line)
+		}
+	}
+}
