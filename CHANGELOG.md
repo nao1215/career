@@ -7,48 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+## [v0.1.0] - 2026-06-13
 
-- Renamed the 職務経歴書 template from `career-history` to `work-history`;
-  `career-history` and `職務経歴書` still work as aliases.
-
-### Fixed
-
-- The 履歴書 no longer silently drops 学歴・職歴 or 免許・資格 rows that exceed one
-  page; the tables now flow onto additional pages, and the free-text fields can
-  no longer be pushed off the page.
-- Free-text fields (趣味・特技, 志望動機, 本人希望記入欄) grow to fit their content and
-  split across pages instead of overrunning the box and the next field.
-- Over-long table cells and personal-block values are truncated with an ellipsis
-  inside their border instead of crossing it, and a shrink no longer leaks a
-  smaller font size into the following rows.
-- Required-field validation now rejects whitespace-only values (e.g. a
-  `profile.name` of only spaces).
-- Long personal-block values (name, address, email, phone) shrink to fit their
-  cell instead of overflowing or overlapping.
-- `career init` fills the date with today's date instead of a fixed value.
+Initial release.
 
 ### Added
 
-- Initial release of `career`.
-- `generate` command rendering a YAML resume into a PDF, selected with
-  `--template`. Three templates are bundled: `cv` (English curriculum vitae),
-  `japanese-resume` (JIS-style 履歴書), and `career-history` (職務経歴書). The
-  Japanese names `履歴書` and `職務経歴書` work as aliases.
-- `--accent` flag and a `theme.accent` YAML field to set the accent color of the
-  `cv` and `career-history` templates (`none` for monochrome). `japanese-resume`
-  always renders in black.
-- `generate` renders the `cv` template by default and can render several
-  documents at once: repeat `--template`, comma-separate names, or pass `all`.
-- Portrait support for the 履歴書: `profile.photo` (resolved relative to the YAML
-  file) or `--photo` (relative to the current directory). The image is fitted to
-  the 3:4 frame without distortion, warns on a mismatched aspect ratio, and falls
-  back to the placeholder when the file is missing.
-- `init` command that writes a starter resume YAML file (`--force` to overwrite).
+- `generate` renders a resume YAML file into a PDF, selected with `--template`.
+  Bundled templates: `cv` (English curriculum vitae), `japanese-resume`
+  (JIS-style 履歴書), and `work-history` (職務経歴書). The Japanese names `履歴書` /
+  `職務経歴書` and the legacy `career-history` work as aliases.
+- Render several documents at once: repeat `--template`, comma-separate names, or
+  pass `all`. With no `--template`, `cv` is rendered.
 - Multilingual text fields: any text value may be a plain scalar or a
-  `{ ja:, en: }` map, so a single file renders the English CV and the Japanese
-  documents each in the right language.
-- `templates` command listing the available document templates.
-- Embedded IPAex Mincho/Gothic fonts so PDFs render identically without font
+  `{ ja:, en: }` map, so one file backs the English CV and the Japanese documents,
+  each in the right language.
+- `init` writes a starter resume YAML file (`--force` to overwrite), with today's
+  date filled in.
+- `templates` lists the available templates and their aliases.
+- Portrait support for the 履歴書 via `profile.photo` (resolved relative to the
+  YAML file) or `--photo` (relative to the current directory). The image is fitted
+  to the 3:4 frame without distortion, warns on a mismatched aspect ratio, and
+  falls back to a placeholder when the file is missing.
+- `--accent` flag and a `theme.accent` YAML field for the `cv` and `work-history`
+  accent color (`none` for monochrome); `japanese-resume` always renders in black.
+- Long 履歴書 tables (学歴・職歴, 免許・資格) and free-text fields flow onto additional
+  pages instead of dropping rows or overrunning the page; over-long values shrink
+  and are ellipsis-truncated within their cell.
+- Required-field validation rejects empty or whitespace-only values.
+- Embedded IPAex Mincho/Gothic fonts, so PDFs render identically without font
   setup.
-- Example resume files, a vhs demo GIF, and shellspec end-to-end tests.
+- Example resume files, a vhs demo GIF, and a shellspec end-to-end suite.
+
+[Unreleased]: https://github.com/nao1215/career/compare/v0.1.0...HEAD
+[v0.1.0]: https://github.com/nao1215/career/releases/tag/v0.1.0
