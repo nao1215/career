@@ -121,6 +121,10 @@ career:
   publications:
     - { ja: 社内技術ブログでバックエンド設計の記事を執筆, en: Authored internal engineering blog posts on backend design }
 
+  links:
+    - { ja: "GitHub: https://github.com/example", en: "GitHub: https://github.com/example" }
+    - { ja: "技術ブログ: https://example.com", en: "Blog: https://example.com" }
+
   self_pr:
     ja: |
       設計から運用までを一人称で完遂することを得意とし、継続的な学習を信条としています。

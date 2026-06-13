@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A `career.links` section renders GitHub, blog, and other URLs as a bulleted
+  list (リンク in work-history, Links in the cv).
+
 ## [v0.2.1] - 2026-06-13
 
 ### Added

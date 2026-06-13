@@ -47,6 +47,7 @@ func sampleResume() *resume.Resume {
 			},
 			Certifications: []resume.Text{p("応用情報技術者試験")},
 			Publications:   []resume.Text{p("Software Design 2024年12月号")},
+			Links:          []resume.Text{p("GitHub: https://github.com/example")},
 			SelfPR:         p("継続的な学習を重視しています。"),
 		},
 	}
