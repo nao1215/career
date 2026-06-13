@@ -181,8 +181,15 @@ A `profile.photo` path is resolved relative to the YAML file, while `--photo`
 (which overrides it) is resolved relative to the current directory. The photo is
 fitted into the frame without distortion; if its aspect ratio is not 3:4 it is
 centered with margins and a warning suggests cropping. A missing or unreadable
-file falls back to the placeholder box with a warning. A 3:4 sample lives at
-[`examples/sample-photo.png`](./examples/sample-photo.png).
+file falls back to the placeholder box with a warning.
+
+A 3:4 sample portrait of a fictional person lives at
+[`image/sample_japanese_man.jpg`](./image/sample_japanese_man.jpg), and the
+履歴書 preview above is rendered with it:
+
+```bash
+career generate examples/resume.yaml -t japanese-resume --photo image/sample_japanese_man.jpg
+```
 
 ## Writing your resume
 

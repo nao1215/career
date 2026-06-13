@@ -35,8 +35,8 @@ Describe 'career generate'
       The path "$WORK/out.pdf" should be exist
     End
 
-    It 'embeds a portrait passed with --photo'
-      When run career generate "$WORK/resume.yaml" -t japanese-resume --photo "$EXAMPLES/sample-photo.png" -o "$WORK/out.pdf"
+    It 'embeds the bundled sample portrait passed with --photo'
+      When run career generate "$WORK/resume.yaml" -t japanese-resume --photo "$PROJECT_ROOT/image/sample_japanese_man.jpg" -o "$WORK/out.pdf"
       The status should be success
       The output should include 'wrote'
       The path "$WORK/out.pdf" should be exist

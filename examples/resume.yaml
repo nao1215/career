@@ -25,7 +25,7 @@ profile:
   gender: 男
   email: taro.mihon@example.com
   phone: "+81 90-1234-5678"
-  photo: ""                      # 証明写真（任意、このYAMLからの相対パス）。例: sample-photo.png
+  photo: ""                      # 証明写真（任意、このYAMLからの相対パス）。例: ../image/sample_japanese_man.jpg
   address:
     zip: 100-0001
     kana: とうきょうとちよだく
