@@ -10,7 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - A `career.links` section renders GitHub, blog, and other URLs as a bulleted
-  list (リンク in work-history, Links in the cv).
+  list, placed last in the work-history (リンク) and cv (Links) documents.
+
+### Changed
+
+- The rule between company entries is omitted when the next company starts a new
+  page; the page break itself separates the entries, so no rule is left dangling
+  at the foot of a page.
 
 ## [v0.2.1] - 2026-06-13
 

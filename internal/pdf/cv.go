@@ -32,11 +32,11 @@ func (cv *cvRenderer) render() {
 	cv.header()
 	cv.summary()
 	cv.skills()
-	cv.list("Links", cv.res.Career.Links)
 	cv.experience()
 	cv.education()
 	cv.list("Certifications", cv.res.Career.Certifications)
 	cv.list("Publications", cv.res.Career.Publications)
+	cv.list("Links", cv.res.Career.Links)
 }
 
 func (cv *cvRenderer) newPage() {
@@ -145,8 +145,16 @@ func (cv *cvRenderer) experience() {
 
 // companyDivider draws a short centered rule between company entries, with room
 // above and below so it reads as a separator rather than crowding either block.
+// The rule is drawn only when the rule and the start of the next company both
+// fit on the current page. Otherwise the next company is moved to the top of a
+// fresh page with no rule, so a company that opens a page never carries a divider
+// and one is never left dangling at the foot of a page.
 func (cv *cvRenderer) companyDivider() {
-	cv.ensure(skLineH * 2)
+	const dividerSpace = 5 + 9
+	if cv.y+dividerSpace+skLineH*3 > skBottom {
+		cv.newPage()
+		return
+	}
 	cv.y += 5
 	cv.c.centerRule(cv.y, 24, divider)
 	cv.y += 9
