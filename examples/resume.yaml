@@ -31,10 +31,10 @@ profile:
   phone: "+81 90-1234-5678"
   photo: ""                      # 証明写真（任意、このYAMLからの相対パス）。例: ../image/sample_japanese_man.jpg
   address:
-    zip: 100-0001
-    kana: とうきょうとちよだく
+    zip: 000-0000
+    kana: とうきょうとみほんく
     text:
-      ja: 東京都千代田区千代田1-1-1 サンプルマンション101
+      ja: 東京都見本区見本町1-2-3 見本ハイツ101
       en: Tokyo, Japan
 
 # 学歴（履歴書・CV）。
@@ -247,7 +247,7 @@ career:
     - { ja: 技術ブログでモバイルアーキテクチャの記事を執筆, en: Authored blog posts on mobile architecture }
 
   links:
-    - { ja: "GitHub: https://github.com/example", en: "GitHub: https://github.com/example" }
+    - { ja: "GitHub: https://github.com/mihon-taro", en: "GitHub: https://github.com/mihon-taro" }
     - { ja: "技術ブログ: https://example.com", en: "Blog: https://example.com" }
 
   self_pr:
