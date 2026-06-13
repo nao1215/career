@@ -28,7 +28,7 @@ profile:
   age: 満 36 歳
   gender: 男
   email: taro.mihon@example.com
-  phone: "+81 90-1234-5678"
+  phone: "+81 90-XXXX-XXXX"
   photo: ""                      # 証明写真（任意、このYAMLからの相対パス）。例: ../image/sample_japanese_man.jpg
   address:
     zip: 000-0000
