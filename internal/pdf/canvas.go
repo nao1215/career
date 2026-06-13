@@ -19,9 +19,10 @@ const solid = ""
 // canvas wraps a gopdf document with millimetre-oriented helpers. The origin is
 // the upper-left corner of the page and y grows downward.
 type canvas struct {
-	pdf     *gopdf.GoPdf
-	curFont string
-	curSize float64
+	pdf      *gopdf.GoPdf
+	curFont  string
+	curSize  float64
+	curColor rgb
 }
 
 // newCanvas starts an A4 document in millimetre units with the embedded fonts
@@ -68,6 +69,23 @@ func (c *canvas) text(x, y float64, s string) {
 	_ = c.pdf.Cell(nil, s)
 }
 
+// setColor selects the text color, skipping the call when nothing changed.
+func (c *canvas) setColor(color rgb) {
+	if c.curColor == color {
+		return
+	}
+	c.pdf.SetTextColor(color.r, color.g, color.b)
+	c.curColor = color
+}
+
+// fillRect draws a filled rectangle in the given color, then restores black as
+// the fill color so later strokes are unaffected.
+func (c *canvas) fillRect(x, y, w, h float64, color rgb) {
+	c.pdf.SetFillColor(color.r, color.g, color.b)
+	c.pdf.RectFromUpperLeftWithStyle(x, y, w, h, "F")
+	c.pdf.SetFillColor(black.r, black.g, black.b)
+}
+
 // textWidth measures the rendered width of s at the current font.
 func (c *canvas) textWidth(s string) float64 {
 	w, err := c.pdf.MeasureTextWidth(s)
@@ -100,8 +118,9 @@ func (c *canvas) rect(x, y, w, h float64) {
 }
 
 // wrap breaks s into lines no wider than maxWidth at the current font. Explicit
-// newlines are honoured, and long runs are broken per rune because Japanese
-// text has no spaces to break on.
+// newlines are honoured. Latin text breaks at spaces; Japanese text, which has
+// no spaces, may break between any two characters; an unbreakable run that is
+// still too long is split per character.
 func (c *canvas) wrap(s string, maxWidth float64) []string {
 	var lines []string
 	for _, paragraph := range strings.Split(s, "\n") {
@@ -109,19 +128,65 @@ func (c *canvas) wrap(s string, maxWidth float64) []string {
 			lines = append(lines, "")
 			continue
 		}
-		var line []rune
-		for _, r := range paragraph {
-			candidate := string(append(line, r))
-			if c.textWidth(candidate) > maxWidth && len(line) > 0 {
-				lines = append(lines, string(line))
-				line = []rune{r}
-				continue
-			}
-			line = append(line, r)
-		}
-		lines = append(lines, string(line))
+		lines = append(lines, c.wrapParagraph(paragraph, maxWidth)...)
 	}
 	return lines
+}
+
+func (c *canvas) wrapParagraph(paragraph string, maxWidth float64) []string {
+	runes := []rune(paragraph)
+	var lines []string
+	start := 0
+	lastBreak := -1 // rune index at which the current line may break
+
+	for i := start; i < len(runes); i++ {
+		if i > start && canBreakBefore(runes[i-1], runes[i]) {
+			lastBreak = i
+		}
+		seg := strings.TrimRight(string(runes[start:i+1]), " ")
+		if i > start && c.textWidth(seg) > maxWidth {
+			brk := lastBreak
+			if brk <= start {
+				brk = i // no break opportunity: hard-split before the current rune
+			}
+			lines = append(lines, strings.TrimRight(string(runes[start:brk]), " "))
+			start = brk
+			for start < len(runes) && runes[start] == ' ' {
+				start++
+			}
+			lastBreak = -1
+			i = start - 1 // rescan from the new line start
+		}
+	}
+	if start < len(runes) {
+		lines = append(lines, strings.TrimRight(string(runes[start:]), " "))
+	}
+	if len(lines) == 0 {
+		lines = append(lines, "")
+	}
+	return lines
+}
+
+// canBreakBefore reports whether a line may break between prev and next: after a
+// space, or adjacent to a CJK character (which carries no spaces of its own).
+func canBreakBefore(prev, next rune) bool {
+	return prev == ' ' || isCJK(prev) || isCJK(next)
+}
+
+// isCJK reports whether r is a CJK ideograph, kana, or CJK punctuation that may
+// start or end a line.
+func isCJK(r rune) bool {
+	switch {
+	case r >= 0x3040 && r <= 0x30ff: // hiragana + katakana
+		return true
+	case r >= 0x3400 && r <= 0x9fff: // CJK unified ideographs (incl. ext A)
+		return true
+	case r >= 0xff00 && r <= 0xffef: // full-width forms
+		return true
+	case r >= 0x3000 && r <= 0x303f: // CJK symbols and punctuation
+		return true
+	}
+	return false
 }
 
 // paragraph draws wrapped text starting at (x, y) within maxWidth, advancing y

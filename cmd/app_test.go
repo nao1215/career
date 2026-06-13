@@ -69,7 +69,7 @@ func TestRunTemplates(t *testing.T) {
 		t.Fatalf("templates exit = %d, want 0", code)
 	}
 	out := stdout.String()
-	for _, want := range []string{"rirekisho", "shokumukeirekisho", "aliases"} {
+	for _, want := range []string{"cv", "japanese-resume", "career-history", "aliases"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("templates output missing %q", want)
 		}
@@ -93,7 +93,7 @@ func TestGenerateRirekisho(t *testing.T) {
 	writeSample(t, dir)
 
 	app, stdout, stderr := newTestApp(dir)
-	code := app.Run([]string{"generate", "resume.yaml", "-t", "rireki", "-o", "out.pdf"})
+	code := app.Run([]string{"generate", "resume.yaml", "-t", "japanese-resume", "-o", "out.pdf"})
 	if code != 0 {
 		t.Fatalf("generate exit = %d, want 0 (stderr=%q)", code, stderr.String())
 	}
@@ -103,24 +103,52 @@ func TestGenerateRirekisho(t *testing.T) {
 	assertPDFFile(t, filepath.Join(dir, "out.pdf"))
 }
 
-func TestGenerateShokumukeirekishoDefaultOutput(t *testing.T) {
+func TestGenerateCareerHistoryDefaultOutput(t *testing.T) {
 	t.Parallel()
 	dir := t.TempDir()
 	writeSample(t, dir)
 
 	app, _, stderr := newTestApp(dir)
 	// Input via --input, no --output so the default name is used.
-	code := app.Run([]string{"generate", "--input", "resume.yaml", "--template", "shokumukeirekisho"})
+	code := app.Run([]string{"generate", "--input", "resume.yaml", "--template", "career-history"})
 	if code != 0 {
 		t.Fatalf("generate exit = %d, want 0 (stderr=%q)", code, stderr.String())
 	}
-	assertPDFFile(t, filepath.Join(dir, "shokumukeirekisho.pdf"))
+	assertPDFFile(t, filepath.Join(dir, "career-history.pdf"))
+}
+
+func TestGenerateCV(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+
+	app, _, stderr := newTestApp(dir)
+	// Default template is cv; also exercise the --accent flag.
+	code := app.Run([]string{"generate", "resume.yaml", "--accent", "#2c6e6e", "-o", "cv.pdf"})
+	if code != 0 {
+		t.Fatalf("generate exit = %d, want 0 (stderr=%q)", code, stderr.String())
+	}
+	assertPDFFile(t, filepath.Join(dir, "cv.pdf"))
+}
+
+func TestGenerateInvalidAccent(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+
+	app, _, stderr := newTestApp(dir)
+	if code := app.Run([]string{"generate", "resume.yaml", "-t", "cv", "--accent", "bogus"}); code != 1 {
+		t.Fatalf("exit = %d, want 1", code)
+	}
+	if !strings.Contains(stderr.String(), "hex color") {
+		t.Errorf("stderr = %q", stderr.String())
+	}
 }
 
 func TestGenerateMissingInput(t *testing.T) {
 	t.Parallel()
 	app, _, stderr := newTestApp(t.TempDir())
-	if code := app.Run([]string{"generate", "-t", "rireki"}); code != 1 {
+	if code := app.Run([]string{"generate", "-t", "japanese-resume"}); code != 1 {
 		t.Fatalf("exit = %d, want 1", code)
 	}
 	if !strings.Contains(stderr.String(), "no input file") {
@@ -144,7 +172,7 @@ func TestGenerateUnknownTemplate(t *testing.T) {
 func TestGenerateFileNotFound(t *testing.T) {
 	t.Parallel()
 	app, _, stderr := newTestApp(t.TempDir())
-	if code := app.Run([]string{"generate", "missing.yaml", "-t", "rireki"}); code != 1 {
+	if code := app.Run([]string{"generate", "missing.yaml", "-t", "japanese-resume"}); code != 1 {
 		t.Fatalf("exit = %d, want 1", code)
 	}
 	if stderr.Len() == 0 {
@@ -161,7 +189,7 @@ func TestGenerateValidationError(t *testing.T) {
 		t.Fatal(err)
 	}
 	app, _, stderr := newTestApp(dir)
-	if code := app.Run([]string{"generate", "empty.yaml", "-t", "rireki"}); code != 1 {
+	if code := app.Run([]string{"generate", "empty.yaml", "-t", "japanese-resume"}); code != 1 {
 		t.Fatalf("exit = %d, want 1", code)
 	}
 	if !strings.Contains(stderr.String(), "name is required") {

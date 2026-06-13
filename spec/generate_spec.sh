@@ -5,40 +5,49 @@ Describe 'career generate'
   BeforeEach 'make_workdir'
   AfterEach 'remove_workdir'
 
-  Describe 'rirekisho'
-    It 'renders a PDF from a positional input and short flags'
-      When run career generate "$WORK/resume.yaml" -t rireki -o "$WORK/out.pdf"
+  Describe 'cv'
+    It 'renders a PDF (default template) with an accent color'
+      When run career generate "$WORK/resume.yaml" --accent "#2c6e6e" -o "$WORK/cv.pdf"
+      The status should be success
+      The output should include 'wrote'
+      The path "$WORK/cv.pdf" should be exist
+    End
+
+    It 'writes a valid PDF header'
+      career generate "$WORK/resume.yaml" -t cv -o "$WORK/cv.pdf"
+      When call pdf_magic "$WORK/cv.pdf"
+      The output should equal '%PDF'
+    End
+  End
+
+  Describe 'japanese-resume'
+    It 'renders a PDF from a positional input'
+      When run career generate "$WORK/resume.yaml" -t japanese-resume -o "$WORK/out.pdf"
       The status should be success
       The output should include 'wrote'
       The path "$WORK/out.pdf" should be exist
     End
 
-    It 'writes a valid PDF header'
-      career generate "$WORK/resume.yaml" -t rirekisho -o "$WORK/out.pdf"
-      When call pdf_magic "$WORK/out.pdf"
-      The output should equal '%PDF'
+    It 'accepts the 履歴書 alias'
+      When run career generate "$WORK/resume.yaml" -t 履歴書 -o "$WORK/out.pdf"
+      The status should be success
+      The output should include 'wrote'
+      The path "$WORK/out.pdf" should be exist
     End
   End
 
-  Describe 'shokumukeirekisho'
-    It 'renders a PDF using --input and an explicit output'
-      When run career generate --input "$WORK/resume.yaml" --template shokumukeirekisho --output "$WORK/cv.pdf"
+  Describe 'career-history'
+    It 'renders a PDF using --input and the default output name'
+      When run career generate --input "$WORK/resume.yaml" --template career-history --output "$WORK/ch.pdf"
       The status should be success
       The output should include 'wrote'
-      The path "$WORK/cv.pdf" should be exist
-    End
-
-    It 'accepts the cv alias'
-      When run career generate "$WORK/resume.yaml" -t cv -o "$WORK/cv.pdf"
-      The status should be success
-      The output should include 'wrote'
-      The path "$WORK/cv.pdf" should be exist
+      The path "$WORK/ch.pdf" should be exist
     End
   End
 
   Describe 'errors'
     It 'fails when the input file is missing'
-      When run career generate "$WORK/nope.yaml" -t rireki -o "$WORK/out.pdf"
+      When run career generate "$WORK/nope.yaml" -t cv -o "$WORK/out.pdf"
       The status should be failure
       The stderr should be present
     End
@@ -49,8 +58,14 @@ Describe 'career generate'
       The stderr should include 'unknown template'
     End
 
+    It 'fails on an invalid accent color'
+      When run career generate "$WORK/resume.yaml" -t cv --accent bogus -o "$WORK/out.pdf"
+      The status should be failure
+      The stderr should include 'hex color'
+    End
+
     It 'fails when no input is given'
-      When run career generate -t rireki
+      When run career generate -t cv
       The status should be failure
       The stderr should include 'no input file'
     End

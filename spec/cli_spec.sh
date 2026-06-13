@@ -23,8 +23,9 @@ Describe 'career CLI'
     It 'lists the available templates'
       When run career templates
       The status should be success
-      The output should include 'rirekisho'
-      The output should include 'shokumukeirekisho'
+      The output should include 'cv'
+      The output should include 'japanese-resume'
+      The output should include 'career-history'
     End
   End
 

@@ -124,15 +124,16 @@ func (a *App) runHelp(args []string) int {
 
 func (a *App) runGenerate(args []string) int {
 	flagSet := newFlagSet("generate", a.stderr)
-	templateName := flagSet.String("template", "rirekisho", "document template: rirekisho or shokumukeirekisho")
-	flagSet.StringVar(templateName, "t", "rirekisho", "shorthand for --template")
+	templateName := flagSet.String("template", "cv", "document template: cv, japanese-resume, or career-history")
+	flagSet.StringVar(templateName, "t", "cv", "shorthand for --template")
 	input := flagSet.String("input", "", "path to the resume YAML file (defaults to the first argument)")
 	flagSet.StringVar(input, "i", "", "shorthand for --input")
 	output := flagSet.String("output", "", "output PDF path (defaults to the template's name)")
 	flagSet.StringVar(output, "o", "", "shorthand for --output")
+	accentFlag := flagSet.String("accent", "", "accent color for cv/career-history: #rrggbb or \"none\" (overrides theme.accent)")
 	flagSet.Usage = func() {
-		writeLine(flagSet.Output(), "Render a resume YAML file into a 履歴書 or 職務経歴書 PDF.")
-		writeLine(flagSet.Output(), "Usage: career generate [INPUT] --template NAME [--input PATH] [--output PATH]")
+		writeLine(flagSet.Output(), "Render a resume YAML file into a CV, 履歴書, or 職務経歴書 PDF.")
+		writeLine(flagSet.Output(), "Usage: career generate [INPUT] --template NAME [--input PATH] [--output PATH] [--accent COLOR]")
 		writeLine(flagSet.Output(), "The input file may be given as the first argument or via --input.")
 		writeLine(flagSet.Output(), "Run \"career templates\" to list the available templates.")
 		printFlagDefaults(flagSet.Output(), flagSet)
@@ -173,7 +174,13 @@ func (a *App) runGenerate(args []string) int {
 		return 1
 	}
 
-	data, err := tmpl.Render(res)
+	// A --accent flag overrides theme.accent from the YAML.
+	accentSetting := res.Theme.Accent
+	if *accentFlag != "" {
+		accentSetting = *accentFlag
+	}
+
+	data, err := tmpl.Render(res, accentSetting)
 	if err != nil {
 		writeLine(a.stderr, err)
 		return 1
@@ -236,7 +243,7 @@ func (a *App) printRootHelp(w io.Writer) {
 	writeLine(w, "  help        Show command help")
 	writeLine(w, "")
 	writeLine(w, "Example:")
-	writeLine(w, "  career generate resume.yaml --template rirekisho --output rireki.pdf")
+	writeLine(w, "  career generate resume.yaml --template cv --output cv.pdf")
 }
 
 // --- flag plumbing (shared by every subcommand) ---

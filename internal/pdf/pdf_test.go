@@ -74,11 +74,26 @@ func TestRenderRirekisho(t *testing.T) {
 
 func TestRenderShokumukeirekisho(t *testing.T) {
 	t.Parallel()
-	got, err := RenderShokumukeirekisho(sampleResume())
+	got, err := RenderShokumukeirekisho(sampleResume(), options{accent: defaultAccent, accentOn: true})
 	if err != nil {
 		t.Fatalf("RenderShokumukeirekisho() error = %v", err)
 	}
 	assertPDF(t, got)
+}
+
+func TestRenderCV(t *testing.T) {
+	t.Parallel()
+	// Cover both the accented and the monochrome paths.
+	for _, opts := range []options{
+		{accent: defaultAccent, accentOn: true},
+		{accentOn: false},
+	} {
+		got, err := RenderCV(sampleResume(), opts)
+		if err != nil {
+			t.Fatalf("RenderCV() error = %v", err)
+		}
+		assertPDF(t, got)
+	}
 }
 
 // TestRenderMinimal ensures rendering does not panic on a document that only has
@@ -93,11 +108,17 @@ func TestRenderMinimal(t *testing.T) {
 	}
 	assertPDF(t, r)
 
-	s, err := RenderShokumukeirekisho(minimal)
+	s, err := RenderShokumukeirekisho(minimal, options{})
 	if err != nil {
 		t.Fatalf("RenderShokumukeirekisho(minimal) error = %v", err)
 	}
 	assertPDF(t, s)
+
+	v, err := RenderCV(minimal, options{})
+	if err != nil {
+		t.Fatalf("RenderCV(minimal) error = %v", err)
+	}
+	assertPDF(t, v)
 }
 
 // TestWrapBreaksLongText checks the line wrapper splits text with no spaces,

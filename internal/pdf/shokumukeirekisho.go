@@ -20,20 +20,21 @@ const (
 
 // RenderShokumukeirekisho renders a flowing 職務経歴書 to PDF bytes, adding pages
 // as the content requires.
-func RenderShokumukeirekisho(res *resume.Resume) ([]byte, error) {
+func RenderShokumukeirekisho(res *resume.Resume, opts options) ([]byte, error) {
 	c, err := newCanvas()
 	if err != nil {
 		return nil, err
 	}
-	s := &shokumuRenderer{c: c, res: res}
+	s := &shokumuRenderer{c: c, res: res, opts: opts}
 	s.render()
 	return c.bytes()
 }
 
 type shokumuRenderer struct {
-	c   *canvas
-	res *resume.Resume
-	y   float64
+	c    *canvas
+	res  *resume.Resume
+	opts options
+	y    float64
 }
 
 func (s *shokumuRenderer) render() {
@@ -80,16 +81,21 @@ func (s *shokumuRenderer) header() {
 }
 
 // heading draws a section heading: an accent bar, bold gothic title, and an
-// underline rule spanning the text width.
+// underline rule spanning the text width. The accent color is used when enabled,
+// otherwise everything is black.
 func (s *shokumuRenderer) heading(title string) {
 	s.ensure(skLineH * 3)
 	c := s.c
 	const barW = 1.8
-	c.pdf.SetFillColor(40, 40, 40)
-	c.pdf.RectFromUpperLeftWithStyle(skLeft, s.y, barW, 5.2, "F")
-	c.pdf.SetFillColor(0, 0, 0)
+	barColor := black
+	if s.opts.accentOn {
+		barColor = s.opts.accent
+	}
+	c.fillRect(skLeft, s.y, barW, 5.2, barColor)
 	c.setFont(font.Gothic, 12.5)
+	c.setColor(barColor)
 	c.text(skLeft+3.5, s.y+0.3, title)
+	c.setColor(black)
 	s.y += 6
 	c.line(skLeft, s.y, skRight, s.y)
 	s.y += 4

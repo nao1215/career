@@ -10,6 +10,8 @@ import "gopkg.in/yaml.v3"
 type Resume struct {
 	// Date is printed in the header, e.g. "2026年6月13日現在".
 	Date string `yaml:"date"`
+	// Theme controls optional styling such as the accent color.
+	Theme Theme `yaml:"theme"`
 	// Profile holds personal information shared by both documents.
 	Profile Profile `yaml:"profile"`
 
@@ -24,6 +26,14 @@ type Resume struct {
 	Rireki Rireki `yaml:"rireki"`
 	// Career holds fields unique to the 職務経歴書.
 	Career Career `yaml:"career"`
+}
+
+// Theme controls optional styling shared by the CV and 職務経歴書.
+type Theme struct {
+	// Accent is the accent color as a hex string ("#1f4e79"). Empty uses the
+	// default; "none" disables the accent and renders in monochrome. The JIS
+	// 履歴書 always renders in black regardless of this setting.
+	Accent string `yaml:"accent"`
 }
 
 // Profile is the personal information block.

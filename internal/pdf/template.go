@@ -6,6 +6,12 @@ import (
 	"github.com/nao1215/career/internal/resume"
 )
 
+// options carries resolved rendering settings shared by the colored templates.
+type options struct {
+	accent   rgb
+	accentOn bool
+}
+
 // Template describes one renderable document kind together with the validation
 // and rendering it needs.
 type Template struct {
@@ -18,25 +24,35 @@ type Template struct {
 	// DefaultOutput is the file name used when the user does not pass --output.
 	DefaultOutput string
 
-	render   func(*resume.Resume) ([]byte, error)
+	render   func(*resume.Resume, options) ([]byte, error)
 	validate func(*resume.Resume) error
 }
 
-// templates lists the available document templates in display order.
+// templates lists the available document templates in display order. CV is first
+// so the project reads as a general resume tool that also covers the Japanese
+// formats.
 var templates = []Template{
 	{
-		Name:          "rirekisho",
-		Aliases:       []string{"rireki", "resume"},
-		Description:   "JIS規格スタイルの履歴書（A4・2ページ）",
-		DefaultOutput: "rirekisho.pdf",
-		render:        RenderRirekisho,
+		Name:          "cv",
+		Aliases:       nil,
+		Description:   "English curriculum vitae / résumé",
+		DefaultOutput: "cv.pdf",
+		render:        RenderCV,
+		validate:      (*resume.Resume).ValidateCareer,
+	},
+	{
+		Name:          "japanese-resume",
+		Aliases:       []string{"履歴書"},
+		Description:   "JIS-style Japanese 履歴書 (A4, 2 pages)",
+		DefaultOutput: "japanese-resume.pdf",
+		render:        func(r *resume.Resume, _ options) ([]byte, error) { return RenderRirekisho(r) },
 		validate:      (*resume.Resume).ValidateRireki,
 	},
 	{
-		Name:          "shokumukeirekisho",
-		Aliases:       []string{"shokureki", "career", "cv"},
-		Description:   "職務経歴書（職務要約・スキル・職務経歴・自己PR）",
-		DefaultOutput: "shokumukeirekisho.pdf",
+		Name:          "career-history",
+		Aliases:       []string{"職務経歴書"},
+		Description:   "Japanese 職務経歴書 (work history with projects)",
+		DefaultOutput: "career-history.pdf",
 		render:        RenderShokumukeirekisho,
 		validate:      (*resume.Resume).ValidateCareer,
 	},
@@ -65,9 +81,16 @@ func Lookup(name string) (Template, bool) {
 }
 
 // Render validates res for this template and renders it to PDF bytes.
-func (t Template) Render(res *resume.Resume) ([]byte, error) {
+// accentSetting controls the accent color of the colored templates: "" uses the
+// default, "none" is monochrome, and "#rrggbb" sets a custom color. It is
+// ignored by the always-black 履歴書.
+func (t Template) Render(res *resume.Resume, accentSetting string) ([]byte, error) {
 	if err := t.validate(res); err != nil {
 		return nil, fmt.Errorf("%s: %w", t.Name, err)
 	}
-	return t.render(res)
+	color, on, err := accent(accentSetting)
+	if err != nil {
+		return nil, err
+	}
+	return t.render(res, options{accent: color, accentOn: on})
 }
