@@ -160,13 +160,15 @@ func (c *canvas) rect(x, y, w, h float64) {
 	c.pdf.RectFromUpperLeftWithStyle(x, y, w, h, "D")
 }
 
-// wrap breaks s into lines no wider than maxWidth at the current font. Explicit
-// newlines are honoured. Latin text breaks at spaces; Japanese text, which has
-// no spaces, may break between any two characters; an unbreakable run that is
-// still too long is split per character.
+// wrap breaks s into lines no wider than maxWidth at the current font. The text
+// is first normalized by fold, so a blank line in the source is a paragraph
+// break while single newlines are soft wraps the renderer re-flows. Latin text
+// breaks at spaces; Japanese text, which has no spaces, may break between any two
+// characters (subject to 禁則処理); an unbreakable run that is still too long is
+// split per character.
 func (c *canvas) wrap(s string, maxWidth float64) []string {
 	var lines []string
-	for _, paragraph := range strings.Split(s, "\n") {
+	for _, paragraph := range strings.Split(fold(s), "\n") {
 		if paragraph == "" {
 			lines = append(lines, "")
 			continue
@@ -174,6 +176,61 @@ func (c *canvas) wrap(s string, maxWidth float64) []string {
 		lines = append(lines, c.wrapParagraph(paragraph, maxWidth)...)
 	}
 	return lines
+}
+
+// fold normalizes authored text for rendering. A blank line starts a new
+// paragraph, kept as a hard break in the output; a single newline is treated as
+// a soft wrap, so consecutive lines are joined — with no space between CJK
+// characters and a single space between Latin words. This lets the source YAML
+// wrap long lines for readability without forcing breaks in the rendered
+// document, while an intentional break is written as a blank line.
+func fold(s string) string {
+	var paragraphs []string
+	var cur []string
+	flush := func() {
+		if len(cur) > 0 {
+			paragraphs = append(paragraphs, joinSoftLines(cur))
+			cur = nil
+		}
+	}
+	for _, line := range strings.Split(s, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			flush()
+			continue
+		}
+		cur = append(cur, line)
+	}
+	flush()
+	return strings.Join(paragraphs, "\n")
+}
+
+// joinSoftLines joins soft-wrapped lines of one paragraph: no space is inserted
+// where either side of the join is a CJK character, a single space otherwise.
+func joinSoftLines(lines []string) string {
+	var b strings.Builder
+	for i, line := range lines {
+		if i > 0 && !isCJK(lastRune(lines[i-1])) && !isCJK(firstRune(line)) {
+			b.WriteByte(' ')
+		}
+		b.WriteString(line)
+	}
+	return b.String()
+}
+
+func firstRune(s string) rune {
+	for _, r := range s {
+		return r
+	}
+	return 0
+}
+
+func lastRune(s string) rune {
+	var last rune
+	for _, r := range s {
+		last = r
+	}
+	return last
 }
 
 func (c *canvas) wrapParagraph(paragraph string, maxWidth float64) []string {
