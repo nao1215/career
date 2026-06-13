@@ -10,27 +10,30 @@ import (
 
 // Rirekisho-specific layout constants in millimetres.
 const (
-	rkLeft   = 10.0  // left margin / left edge of the form
-	rkRight  = 200.0 // right edge of the form
-	rkWidth  = rkRight - rkLeft
-	rkYearX  = 26.0 // right edge of the 年 column
-	rkMonthX = 40.0 // right edge of the 月 column
-	rkValX   = 42.0 // left edge of the 内容 column
-	rkRowH   = 8.0  // height of one table row
+	rkLeft     = 10.0  // left margin / left edge of the form
+	rkRight    = 200.0 // right edge of the form
+	rkWidth    = rkRight - rkLeft
+	rkYearX    = 26.0  // right edge of the 年 column
+	rkMonthX   = 40.0  // right edge of the 月 column
+	rkValX     = 42.0  // left edge of the 内容 column
+	rkRowH     = 8.0   // height of one table row
+	rkTop      = 14.0  // top margin for continuation pages
+	rkBottom   = 285.0 // y past which content flows to a new page
+	rkTableTop = 104.0 // where the 学歴・職歴 table starts on page one
 )
 
-// RenderRirekisho renders a JIS-style 履歴書 to PDF bytes. The layout follows
-// the conventional two-page A4 format: page one carries the personal block and
-// the 学歴・職歴 table, page two the 免許・資格 table and the free-text fields.
+// RenderRirekisho renders a JIS-style 履歴書 to PDF bytes. The personal block and
+// the 学歴・職歴 table open on page one; the 学歴・職歴 and 免許・資格 tables and the
+// free-text fields flow onto additional pages as the data requires, so nothing
+// is silently dropped.
 func RenderRirekisho(res *resume.Resume, opts options) ([]byte, error) {
 	c, err := newCanvas()
 	if err != nil {
 		return nil, err
 	}
 
-	rireki := &rirekishoRenderer{c: c, res: res, lang: opts.lang, photo: opts.photo}
-	rireki.page1()
-	rireki.page2()
+	r := &rirekishoRenderer{c: c, res: res, lang: opts.lang, photo: opts.photo}
+	r.render()
 
 	return c.bytes()
 }
@@ -40,27 +43,54 @@ type rirekishoRenderer struct {
 	res   *resume.Resume
 	lang  string
 	photo string // resolved portrait path, or ""
+	y     float64
 }
 
-func (r *rirekishoRenderer) page1() {
-	c := r.c
-	c.pdf.AddPage()
+func (r *rirekishoRenderer) render() {
+	r.c.pdf.AddPage()
 
-	// Header: title on the left, "as of" date on the right of the text block.
-	c.setFont(font.Gothic, 16)
-	c.text(rkLeft, 11, "履　歴　書")
+	// Header: title on the left, "as of" date to the right of the text block.
+	r.c.setFont(font.Gothic, 16)
+	r.c.text(rkLeft, 11, "履　歴　書")
 	if date := r.res.Date.For(r.lang); date != "" {
-		c.setFont(font.Mincho, 9)
-		c.textRight(160, 14, date)
+		r.c.textFit(100, 14, 60, date, 9, 7)
 	}
 
 	r.personalBlock()
 	r.photoBox()
-	r.educationExperienceTable()
+
+	// 学歴・職歴 fills the rest of page one (and continues onto new pages).
+	r.y = rkTableTop
+	r.flowGrid("学歴・職歴（各項目ごとにまとめて書く）", r.buildHistoryRows(), true, 0)
+
+	// 免許・資格 sized to its content, then the free-text fields below it.
+	r.flowGrid("免許・資格", r.licenseRows(), false, 8)
+	r.y += 6
+
+	r.ensure(16)
+	r.summaryBox(r.y)
+	r.y += 16 + 6
+
+	r.freeField("趣味・特技", r.res.Rireki.Hobby, 36)
+	r.freeField("志望動機", r.res.Rireki.Motivation, 40)
+	r.freeField("本人希望記入欄", r.res.Rireki.Request, 40)
+}
+
+// newPage starts a fresh page and resets the cursor to the top margin.
+func (r *rirekishoRenderer) newPage() {
+	r.c.pdf.AddPage()
+	r.y = rkTop
+}
+
+// ensure guarantees space mm remain before the bottom margin.
+func (r *rirekishoRenderer) ensure(space float64) {
+	if r.y+space > rkBottom {
+		r.newPage()
+	}
 }
 
 // personalBlock draws the bordered name/birth/address grid to the left of the
-// photo.
+// photo. Long values shrink to fit their cell instead of overflowing.
 func (r *rirekishoRenderer) personalBlock() {
 	c := r.c
 	p := r.res.Profile
@@ -76,7 +106,6 @@ func (r *rirekishoRenderer) personalBlock() {
 		smallPt = 8.0
 	)
 
-	// Row boundaries from the top down.
 	yFuriganaName := top
 	yName := top + 6
 	yBirth := top + 20
@@ -92,14 +121,13 @@ func (r *rirekishoRenderer) personalBlock() {
 	// ふりがな (name)
 	c.setFont(font.Mincho, smallPt)
 	c.text(labelX, yFuriganaName+1, "ふりがな")
-	c.text(valueX, yFuriganaName+1, p.NameKana)
+	c.textFit(valueX, yFuriganaName+1, right-valueX, p.NameKana, smallPt, 6)
 	c.line(left, yName, right, yName)
 
 	// 氏名
 	c.setFont(font.Mincho, labelPt)
 	c.text(labelX, yName+5, "氏　名")
-	c.setFont(font.Mincho, 18)
-	c.text(valueX, yName+4, p.Name.For(r.lang))
+	c.textFit(valueX, yName+4, right-valueX, p.Name.For(r.lang), 18, 11)
 	c.line(left, yBirth, right, yBirth)
 
 	// 生年月日 / 性別
@@ -107,22 +135,20 @@ func (r *rirekishoRenderer) personalBlock() {
 	c.line(genderX, yBirth, genderX, yFuriganaAddr)
 	c.setFont(font.Mincho, labelPt)
 	c.text(labelX, yBirth+2, "生年月日")
-	c.setFont(font.Mincho, 12)
 	birth := p.BirthDate
 	if p.Age != "" {
 		birth += "　（" + p.Age + "）"
 	}
-	c.text(valueX, yBirth+6, birth)
+	c.textFit(valueX, yBirth+6, genderX-valueX-2, birth, 12, 8)
 	c.setFont(font.Mincho, labelPt)
 	c.text(genderX+2, yBirth+2, "性別")
-	c.setFont(font.Mincho, 12)
-	c.text(genderX+10, yBirth+6, p.Gender)
+	c.textFit(genderX+10, yBirth+6, right-genderX-12, p.Gender, 12, 8)
 	c.line(left, yFuriganaAddr, right, yFuriganaAddr)
 
 	// ふりがな (address)
 	c.setFont(font.Mincho, smallPt)
 	c.text(labelX, yFuriganaAddr+1, "ふりがな")
-	c.text(valueX, yFuriganaAddr+1, p.Address.Kana)
+	c.textFit(valueX, yFuriganaAddr+1, right-valueX, p.Address.Kana, smallPt, 6)
 	c.line(left, yAddr, right, yAddr)
 
 	// 現住所
@@ -131,14 +157,13 @@ func (r *rirekishoRenderer) personalBlock() {
 	if p.Address.Zip != "" {
 		c.text(labelX, yAddr+7, "〒 "+p.Address.Zip)
 	}
-	c.setFont(font.Mincho, 11)
-	c.text(valueX, yAddr+8, p.Address.Text.For(r.lang))
+	c.textFit(valueX, yAddr+8, right-valueX, p.Address.Text.For(r.lang), 11, 7)
 	c.line(left, yFuriganaContact, right, yFuriganaContact)
 
 	// ふりがな (contact)
 	c.setFont(font.Mincho, smallPt)
 	c.text(labelX, yFuriganaContact+1, "ふりがな")
-	c.text(valueX, yFuriganaContact+1, p.Contact.Kana)
+	c.textFit(valueX, yFuriganaContact+1, right-valueX, p.Contact.Kana, smallPt, 6)
 	c.line(left, yContact, right, yContact)
 
 	// 連絡先
@@ -151,8 +176,7 @@ func (r *rirekishoRenderer) personalBlock() {
 		if p.Contact.Zip != "" {
 			c.text(labelX, yContact+7, "〒 "+p.Contact.Zip)
 		}
-		c.setFont(font.Mincho, 11)
-		c.text(valueX, yContact+8, p.Contact.Text.For(r.lang))
+		c.textFit(valueX, yContact+8, right-valueX, p.Contact.Text.For(r.lang), 11, 7)
 	}
 	c.line(left, yPhoneRow, right, yPhoneRow)
 
@@ -161,12 +185,10 @@ func (r *rirekishoRenderer) personalBlock() {
 	c.line(emailX, yPhoneRow, emailX, bottom)
 	c.setFont(font.Mincho, smallPt)
 	c.text(labelX, yPhoneRow+1.5, "携帯電話")
-	c.setFont(font.Mincho, labelPt)
-	c.text(labelX+18, yPhoneRow+1.5, p.Phone)
+	c.textFit(labelX+18, yPhoneRow+1.5, emailX-(labelX+18)-1, p.Phone, labelPt, 6)
 	c.setFont(font.Mincho, smallPt)
 	c.text(emailX+2, yPhoneRow+1.5, "E-MAIL")
-	c.setFont(font.Mincho, labelPt)
-	c.text(emailX+16, yPhoneRow+1.5, p.Email)
+	c.textFit(emailX+16, yPhoneRow+1.5, right-(emailX+16)-1, p.Email, labelPt, 6)
 }
 
 // photoBox draws the portrait placeholder, or the supplied image when present.
@@ -195,15 +217,6 @@ func (r *rirekishoRenderer) photoBox() {
 	c.setFont(font.Mincho, 7)
 	c.textCenter(x, w, y+20, "縦36〜40mm")
 	c.textCenter(x, w, y+24, "横24〜30mm")
-}
-
-// educationExperienceTable draws the 学歴・職歴 grid filling the rest of page one.
-func (r *rirekishoRenderer) educationExperienceTable() {
-	const top = 104.0
-	const bottom = 285.0
-
-	rows := r.buildHistoryRows()
-	r.drawHistoryGrid(top, bottom, "学歴・職歴（各項目ごとにまとめて書く）", rows)
 }
 
 // historyRow is one already-formatted line in a year/month/value table.
@@ -236,36 +249,84 @@ func (r *rirekishoRenderer) buildHistoryRows() []historyRow {
 	return rows
 }
 
-// drawHistoryGrid renders a bordered year/month/value table between top and
-// bottom, painting empty rows to fill the remaining space.
-func (r *rirekishoRenderer) drawHistoryGrid(top, bottom float64, caption string, rows []historyRow) {
-	c := r.c
-	height := bottom - top
-	rowCount := int(height / rkRowH)
+// licenseRows turns the licenses list into display rows with a trailing 以上.
+func (r *rirekishoRenderer) licenseRows() []historyRow {
+	rows := make([]historyRow, 0, len(r.res.Licenses)+1)
+	for _, l := range r.res.Licenses {
+		rows = append(rows, historyRow{year: l.Year.String(), month: l.Month.String(), value: l.Value.For(r.lang)})
+	}
+	rows = append(rows, historyRow{value: "以上", righted: true})
+	return rows
+}
 
-	// Outer frame and column separators.
-	c.rect(rkLeft, top, rkWidth, float64(rowCount)*rkRowH)
-	c.line(rkYearX, top, rkYearX, top+float64(rowCount)*rkRowH)
-	c.line(rkMonthX, top, rkMonthX, top+float64(rowCount)*rkRowH)
+// flowGrid draws a bordered year/month/value table starting at the cursor,
+// breaking to new pages until every row is drawn. Full pages are filled to the
+// bottom. When fillLastToBottom is true the final page is filled too (used for
+// the 学歴・職歴 table that should occupy page one); otherwise the final segment is
+// sized to its content but at least minLastRows tall, so later content can follow.
+func (r *rirekishoRenderer) flowGrid(caption string, rows []historyRow, fillLastToBottom bool, minLastRows int) {
+	for {
+		avail := int((rkBottom - r.y) / rkRowH) // rows that fit, including the header
+		if avail < 2 {
+			r.newPage()
+			continue
+		}
+		bodyCap := avail - 1
+		isLast := len(rows) <= bodyCap
+
+		var chunk []historyRow
+		if isLast {
+			chunk, rows = rows, nil
+		} else {
+			chunk, rows = rows[:bodyCap], rows[bodyCap:]
+		}
+
+		segRows := avail // a full page by default
+		if isLast && !fillLastToBottom {
+			segRows = 1 + len(chunk)
+			if segRows < minLastRows {
+				segRows = minLastRows
+			}
+			if segRows > avail {
+				segRows = avail
+			}
+		}
+
+		r.drawGridSegment(r.y, segRows, caption, chunk)
+		r.y += float64(segRows) * rkRowH
+
+		if isLast {
+			return
+		}
+		r.newPage()
+	}
+}
+
+// drawGridSegment draws one page-segment of a table: the outer frame, the column
+// separators, a header row, the row separators, and the supplied content rows.
+func (r *rirekishoRenderer) drawGridSegment(top float64, segRows int, caption string, chunk []historyRow) {
+	c := r.c
+	height := float64(segRows) * rkRowH
+
+	c.rect(rkLeft, top, rkWidth, height)
+	c.line(rkYearX, top, rkYearX, top+height)
+	c.line(rkMonthX, top, rkMonthX, top+height)
 
 	// Header row.
 	c.setFont(font.Mincho, 9)
 	c.textCenter(rkLeft, rkYearX-rkLeft, top+2, "年")
 	c.textCenter(rkYearX, rkMonthX-rkYearX, top+2, "月")
 	c.textCenter(rkValX, rkRight-rkValX, top+2, caption)
-	c.line(rkLeft, top+rkRowH, rkRight, top+rkRowH)
 
-	// Body rows.
-	for i := 1; i < rowCount; i++ {
+	// Row separators (the rect supplies the bottom edge).
+	for i := 1; i < segRows; i++ {
 		y := top + float64(i)*rkRowH
 		c.line(rkLeft, y, rkRight, y)
 	}
 
+	// Content rows start just below the header.
 	c.setFont(font.Mincho, 11)
-	for i, row := range rows {
-		if i+1 >= rowCount {
-			break // ran out of room; remaining rows are dropped from this page
-		}
+	for i, row := range chunk {
 		y := top + float64(i+1)*rkRowH + 2
 		switch {
 		case row.center:
@@ -275,48 +336,18 @@ func (r *rirekishoRenderer) drawHistoryGrid(top, bottom float64, caption string,
 		default:
 			c.textRight(rkYearX-1, y, row.year)
 			c.textRight(rkMonthX-1, y, row.month)
-			c.text(rkValX, y, row.value)
+			c.textFit(rkValX, y, rkRight-rkValX-2, row.value, 11, 7)
 		}
 	}
 }
 
-func (r *rirekishoRenderer) page2() {
-	c := r.c
-	c.pdf.AddPage()
-
-	// 免許・資格 table at the top of page two.
-	licTop := 14.0
-	licRows := make([]historyRow, 0, len(r.res.Licenses)+1)
-	for _, l := range r.res.Licenses {
-		licRows = append(licRows, historyRow{year: l.Year.String(), month: l.Month.String(), value: l.Value.For(r.lang)})
-	}
-	licRows = append(licRows, historyRow{value: "以上", righted: true})
-	licBottom := licTop + rkRowH*float64(maxInt(len(licRows)+1, 8))
-	r.drawHistoryGrid(licTop, licBottom, "免許・資格", licRows)
-
-	y := licBottom + 8
-
-	// 通勤時間 / 扶養家族 / 配偶者 summary box.
-	y = r.summaryBox(y)
-	y += 6
-
-	// Free-text fields.
-	y = r.textField(y, "趣味・特技", r.res.Rireki.Hobby, 36)
-	y += 5
-	y = r.textField(y, "志望動機", r.res.Rireki.Motivation, 40)
-	y += 5
-	_ = r.textField(y, "本人希望記入欄", r.res.Rireki.Request, 40)
-}
-
-// summaryBox draws the single-row commute/dependents/spouse table and returns
-// the y just below it.
-func (r *rirekishoRenderer) summaryBox(top float64) float64 {
+// summaryBox draws the single-row commute/dependents/spouse table.
+func (r *rirekishoRenderer) summaryBox(top float64) {
 	c := r.c
 	const h = 16.0
 	rk := r.res.Rireki
 
 	c.rect(rkLeft, top, rkWidth, h)
-	// Four equal-ish cells.
 	x1 := rkLeft + 55
 	x2 := rkLeft + 100
 	x3 := rkLeft + 145
@@ -335,13 +366,14 @@ func (r *rirekishoRenderer) summaryBox(top float64) float64 {
 	c.text(x1+6, top+9, rk.Dependents)
 	c.text(x2+6, top+9, rk.Spouse)
 	c.text(x3+6, top+9, rk.SupportingSpouse)
-	return top + h
 }
 
-// textField draws a labelled free-text box of the given height and returns the
-// y just below it.
-func (r *rirekishoRenderer) textField(top float64, label, body string, h float64) float64 {
+// freeField draws a labelled free-text box of the given height, breaking to a
+// new page first when it would not fit, and advances the cursor below it.
+func (r *rirekishoRenderer) freeField(label, body string, h float64) {
+	r.ensure(h)
 	c := r.c
+	top := r.y
 	c.rect(rkLeft, top, rkWidth, h)
 	c.setFont(font.Mincho, 9)
 	c.text(rkLeft+2, top+2, label)
@@ -349,12 +381,5 @@ func (r *rirekishoRenderer) textField(top float64, label, body string, h float64
 		c.setFont(font.Mincho, 11)
 		c.paragraph(rkLeft+3, top+8, rkWidth-6, 6, strings.TrimRight(body, "\n"))
 	}
-	return top + h
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
+	r.y = top + h + 5
 }

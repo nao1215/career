@@ -2,13 +2,23 @@ package cmd
 
 import (
 	_ "embed"
+	"fmt"
 	"os"
+	"strings"
+	"time"
 )
 
-// starterYAML is the scaffold written by "career init".
+// starterYAML is the scaffold written by "career init". The __DATE__ token is
+// replaced with today's date so a freshly created file is not already stale.
 //
 //go:embed templates/starter.yaml
 var starterYAML []byte
+
+// starterContent returns the scaffold with the date placeholder filled in.
+func starterContent(now time.Time) []byte {
+	date := fmt.Sprintf("%d年%d月%d日現在", now.Year(), int(now.Month()), now.Day())
+	return []byte(strings.ReplaceAll(string(starterYAML), "__DATE__", date))
+}
 
 func (a *App) runInit(args []string) int {
 	flagSet := newFlagSet("init", a.stderr)
@@ -42,7 +52,7 @@ func (a *App) runInit(args []string) int {
 		}
 	}
 
-	if err := os.WriteFile(dest, starterYAML, 0o600); err != nil {
+	if err := os.WriteFile(dest, starterContent(time.Now()), 0o600); err != nil {
 		writef(a.stderr, "write %s: %v\n", target, err)
 		return 1
 	}

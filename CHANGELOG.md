@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The 履歴書 no longer silently drops 学歴・職歴 or 免許・資格 rows that exceed one
+  page; the tables now flow onto additional pages, and the free-text fields can
+  no longer be pushed off the page.
+- Required-field validation now rejects whitespace-only values (e.g. a
+  `profile.name` of only spaces).
+- Long personal-block values (name, address, email, phone) shrink to fit their
+  cell instead of overflowing or overlapping.
+- `career init` fills the date with today's date instead of a fixed value.
+
 ### Added
 
 - Initial release of `career`.

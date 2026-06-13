@@ -329,6 +329,23 @@ func TestGenerateValidationError(t *testing.T) {
 	}
 }
 
+func TestGenerateWhitespaceNameFails(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	// A name of only spaces must not pass validation.
+	path := filepath.Join(dir, "blank.yaml")
+	if err := os.WriteFile(path, []byte("profile:\n  name: \"   \"\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	app, _, stderr := newTestApp(dir)
+	if code := app.Run([]string{"generate", "blank.yaml", "-t", "japanese-resume"}); code != 1 {
+		t.Fatalf("exit = %d, want 1", code)
+	}
+	if !strings.Contains(stderr.String(), "name is required") {
+		t.Errorf("stderr = %q", stderr.String())
+	}
+}
+
 func TestHelpForGenerate(t *testing.T) {
 	t.Parallel()
 	app, stdout, _ := newTestApp(t.TempDir())

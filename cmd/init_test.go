@@ -23,8 +23,16 @@ func TestInitWritesStarter(t *testing.T) {
 	if err != nil {
 		t.Fatalf("starter not written: %v", err)
 	}
-	if !strings.Contains(string(data), "profile:") {
+	body := string(data)
+	if !strings.Contains(body, "profile:") {
 		t.Error("starter is missing the profile section")
+	}
+	// The date placeholder must be replaced with a real date at write time.
+	if strings.Contains(body, "__DATE__") {
+		t.Error("starter still contains the __DATE__ placeholder")
+	}
+	if !strings.Contains(body, "年") || !strings.Contains(body, "現在") {
+		t.Errorf("starter date was not filled in: %q", body)
 	}
 }
 

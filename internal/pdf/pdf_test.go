@@ -73,6 +73,50 @@ func TestRenderRirekisho(t *testing.T) {
 	assertPDF(t, got)
 }
 
+// pageCount renders the 履歴書 and reports how many pages it produced.
+func pageCount(t *testing.T, res *resume.Resume) int {
+	t.Helper()
+	c, err := newCanvas()
+	if err != nil {
+		t.Fatalf("newCanvas() error = %v", err)
+	}
+	(&rirekishoRenderer{c: c, res: res, lang: resume.LangJA}).render()
+	return c.pdf.GetNumberOfPages()
+}
+
+// TestRirekishoPaginatesWithoutDropping guards against the regression where rows
+// beyond a single page were silently discarded. A long history must spill onto
+// extra pages rather than being truncated.
+func TestRirekishoPaginatesWithoutDropping(t *testing.T) {
+	t.Parallel()
+
+	small := sampleResume()
+	if got := pageCount(t, small); got != 2 {
+		t.Fatalf("small resume pages = %d, want 2", got)
+	}
+
+	big := sampleResume()
+	for i := 0; i < 40; i++ {
+		big.Work = append(big.Work, resume.HistoryItem{
+			Year:  resume.Flex("2010"),
+			Month: resume.Flex("4"),
+			Value: resume.Plain("会社の職歴エントリ"),
+		})
+	}
+	for i := 0; i < 40; i++ {
+		big.Licenses = append(big.Licenses, resume.HistoryItem{
+			Year:  resume.Flex("2011"),
+			Month: resume.Flex("5"),
+			Value: resume.Plain("資格エントリ"),
+		})
+	}
+	// 80+ extra rows cannot fit on the two pages a short resume uses; the
+	// renderer must add pages instead of dropping rows.
+	if got := pageCount(t, big); got <= 2 {
+		t.Fatalf("large resume pages = %d, want > 2 (rows must not be dropped)", got)
+	}
+}
+
 func TestRenderShokumukeirekisho(t *testing.T) {
 	t.Parallel()
 	got, err := RenderShokumukeirekisho(sampleResume(), options{accent: defaultAccent, accentOn: true})

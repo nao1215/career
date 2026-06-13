@@ -2,6 +2,7 @@ package resume
 
 import (
 	"fmt"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -72,9 +73,9 @@ func (t Text) For(lang string) string {
 	return ""
 }
 
-// Has reports whether the text holds any non-empty value.
+// Has reports whether the text holds a value that is not empty or whitespace.
 func (t Text) Has() bool {
-	return t.For(defaultLangKey) != ""
+	return strings.TrimSpace(t.For(defaultLangKey)) != ""
 }
 
 // Plain builds a Text that applies to every language. It is mainly used in tests

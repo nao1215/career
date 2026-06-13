@@ -139,6 +139,11 @@ func TestValidateRireki(t *testing.T) {
 			wantErr: ErrEmptyName,
 		},
 		{
+			name:    "whitespace-only name",
+			res:     Resume{Profile: Profile{Name: Plain("   ")}},
+			wantErr: ErrEmptyName,
+		},
+		{
 			name: "ok",
 			res:  Resume{Profile: Profile{Name: Plain("x")}},
 		},
@@ -173,6 +178,11 @@ func TestValidateCareer(t *testing.T) {
 		{
 			name:    "no content",
 			res:     Resume{Profile: Profile{Name: Plain("x")}},
+			wantErr: true,
+		},
+		{
+			name:    "whitespace-only summary, no history",
+			res:     Resume{Profile: Profile{Name: Plain("x")}, Career: Career{Summary: Plain("   ")}},
 			wantErr: true,
 		},
 		{

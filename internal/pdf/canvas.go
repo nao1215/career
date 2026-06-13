@@ -95,6 +95,25 @@ func (c *canvas) textWidth(s string) float64 {
 	return w
 }
 
+// textFit draws s at (x, y) in the Mincho font, shrinking from size down toward
+// minSize until the text fits within maxWidth. It keeps long values (addresses,
+// emails) from overflowing their cell.
+func (c *canvas) textFit(x, y, maxWidth float64, s string, size, minSize float64) {
+	if s == "" {
+		return
+	}
+	sz := size
+	for sz > minSize {
+		c.setFont(font.Mincho, sz)
+		if c.textWidth(s) <= maxWidth {
+			break
+		}
+		sz -= 0.5
+	}
+	c.setFont(font.Mincho, sz)
+	c.text(x, y, s)
+}
+
 // textRight draws s so its right edge sits at xRight.
 func (c *canvas) textRight(xRight, y float64, s string) {
 	c.text(xRight-c.textWidth(s), y, s)
