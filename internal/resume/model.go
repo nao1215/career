@@ -86,6 +86,7 @@ type Career struct {
 	Histories      []CareerHistory `yaml:"histories"`      // 職務経歴
 	Certifications []Text          `yaml:"certifications"` // 資格
 	Publications   []Text          `yaml:"publications"`   // 出版・登壇など
+	Links          []Text          `yaml:"links"`          // リンク（GitHub、ブログなど）
 	SelfPR         Text            `yaml:"self_pr"`        // 自己PR
 }
 

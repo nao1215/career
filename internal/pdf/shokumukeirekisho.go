@@ -51,6 +51,7 @@ func (s *shokumuRenderer) render() {
 	s.header()
 	s.summarySection()
 	s.skillsSection()
+	s.listSection("リンク", s.res.Career.Links)
 	s.historySection()
 	s.listSection("資格", s.res.Career.Certifications)
 	s.listSection("出版・登壇", s.res.Career.Publications)

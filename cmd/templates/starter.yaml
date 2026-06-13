@@ -65,6 +65,8 @@ career:
         - title: { ja: 〇〇サービスの開発, en: 〇〇 service development }
           description: { ja: 〇〇を設計・実装しました。, en: Designed and implemented 〇〇. }
           tech: [〇〇]
+  links:
+    - { ja: "GitHub: https://github.com/example" }
   self_pr:
     ja: 〇〇を強みとし、貢献できます。
     en: My strength is 〇〇, and I can contribute with it.

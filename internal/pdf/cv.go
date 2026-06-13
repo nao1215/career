@@ -32,6 +32,7 @@ func (cv *cvRenderer) render() {
 	cv.header()
 	cv.summary()
 	cv.skills()
+	cv.list("Links", cv.res.Career.Links)
 	cv.experience()
 	cv.education()
 	cv.list("Certifications", cv.res.Career.Certifications)
