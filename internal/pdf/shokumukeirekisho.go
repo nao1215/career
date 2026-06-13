@@ -18,6 +18,13 @@ const (
 	skBodyPt = 10.5  // default body font size
 	skMetaH  = 5.6   // line height for the smaller history body / meta lines
 	skMetaPt = 9.5   // font size for history body / meta lines
+
+	// Indentation rail for history entries, stepped by a constant amount so the
+	// hierarchy reads cleanly: the company marker sits at skLeft, the company
+	// name and its role/summary plus each project marker align at skHistL1, and
+	// every project's title and body align at skHistL2.
+	skHistL1 = skLeft + 5.0  // company name / role / summary, project marker
+	skHistL2 = skLeft + 10.0 // project title and project body
 )
 
 // RenderShokumukeirekisho renders a flowing 職務経歴書 to PDF bytes, adding pages
@@ -146,27 +153,28 @@ func (s *shokumuRenderer) companyBlock(h *resume.CareerHistory) {
 	c := s.c
 	s.ensure(skLineH * 3)
 
-	// Company name with an accent marker, period right-aligned on the same line.
+	// Company name sits on the L1 rail with an accent marker hanging to its left;
+	// the period is right-aligned on the same line.
 	c.setFont(font.Gothic, 11.5)
-	mark := "■"
 	c.setColor(s.markColor())
-	c.text(skLeft, s.y, mark)
+	c.text(skLeft, s.y, "■")
 	c.setColor(black)
-	c.text(skLeft+c.textWidth(mark)+1.8, s.y, s.tr(h.Company))
+	c.text(skHistL1, s.y, s.tr(h.Company))
 	if period := s.tr(h.Period); period != "" {
 		c.setFont(font.Mincho, skMetaPt)
 		c.textRight(skRight, s.y+0.8, period)
 	}
 	s.y += 6.5
 
+	// Role and summary hang under the company name on the same rail.
 	if role := s.tr(h.Role); role != "" {
-		s.metaLine(skLeft+2, skMetaH, "役職", role)
+		s.metaLine(skHistL1, skMetaH, "役職", role)
 	}
 	if summary := s.tr(h.Summary); strings.TrimSpace(summary) != "" {
 		c.setFont(font.Mincho, skMetaPt)
-		s.flow(skLeft+2, skMetaH, summary)
+		s.flow(skHistL1, skMetaH, summary)
 	}
-	s.y += 2
+	s.y += 3
 
 	for i := range h.Projects {
 		s.projectBlock(&h.Projects[i])
@@ -177,33 +185,34 @@ func (s *shokumuRenderer) companyBlock(h *resume.CareerHistory) {
 func (s *shokumuRenderer) projectBlock(p *resume.Project) {
 	c := s.c
 	s.ensure(skLineH * 2)
-	s.y += 1 // breathing room above each project
+	s.y += 1.5 // breathing room above each project
 
-	// Project title with an accent marker; the period follows in a lighter tone.
+	// Project marker hangs on the L1 rail; the title and all body lines align on
+	// the L2 rail so the entry has a single clean left edge.
 	c.setFont(font.Gothic, 10)
-	mark := "▸"
 	c.setColor(s.markColor())
-	c.text(skLeft+3, s.y, mark)
+	c.text(skHistL1, s.y, "▸")
 	c.setColor(black)
-	titleX := skLeft + 3 + c.textWidth(mark) + 1.5
 	title := s.tr(p.Title)
 	if period := s.tr(p.Period); period != "" {
 		title += "（" + period + "）"
 	}
-	s.flow(titleX, skLineH, title)
+	s.flow(skHistL2, skLineH, title)
 
-	const projIndent = skLeft + 7
+	// Compact metadata first, then the detail as its own spaced-out paragraph so
+	// the entry never reads as a solid block of text.
 	if role := s.tr(p.Role); role != "" {
-		s.metaLine(projIndent, skMetaH, "役割・規模", role)
-	}
-	if desc := s.tr(p.Description); strings.TrimSpace(desc) != "" {
-		c.setFont(font.Mincho, skMetaPt)
-		s.flow(projIndent, skMetaH, desc)
+		s.metaLine(skHistL2, skMetaH, "役割・規模", role)
 	}
 	if len(p.Tech) > 0 {
-		s.metaLine(projIndent, skMetaH, "使用技術", strings.Join(p.Tech, " / "))
+		s.metaLine(skHistL2, skMetaH, "使用技術", strings.Join(p.Tech, " / "))
 	}
-	s.y += 2
+	if desc := s.tr(p.Description); strings.TrimSpace(desc) != "" {
+		s.y += 1.2 // separate the detail from the metadata above
+		c.setFont(font.Mincho, skMetaPt)
+		s.flow(skHistL2, skMetaH, desc)
+	}
+	s.y += 2.5
 }
 
 // markColor returns the accent color when enabled, else black. It tints the
@@ -216,24 +225,22 @@ func (s *shokumuRenderer) markColor() rgb {
 	return black
 }
 
-// metaLine draws a small gray caption label followed by its value as body text.
-// The value wraps with a hanging indent so continuation lines align under the
-// first value line rather than under the label, keeping 役割・規模 and 使用技術
-// visually distinct from the surrounding description.
+// metaLine draws a gray caption label followed by its value as body text. Label
+// and value share the same Mincho face and baseline so the typeface never
+// changes mid-line; only the gray tone of the label sets it apart. The value
+// wraps with a hanging indent so continuation lines align under the first value
+// line rather than under the label.
 func (s *shokumuRenderer) metaLine(x, lineH float64, label, value string) {
 	c := s.c
-	// The label shares the body size and baseline so it reads as part of the
-	// line; only its gothic weight and gray tone set it apart from the value.
-	c.setFont(font.Gothic, skMetaPt)
-	valueX := x + c.textWidth(label+"：")
+	c.setFont(font.Mincho, skMetaPt)
+	prefix := label + "："
+	valueX := x + c.textWidth(prefix)
 	for i, line := range c.wrap(strings.TrimRight(value, "\n"), skRight-valueX) {
 		s.ensure(lineH)
 		if i == 0 {
-			c.setFont(font.Gothic, skMetaPt)
 			c.setColor(metaLabel)
-			c.text(x, s.y, label+"：")
+			c.text(x, s.y, prefix)
 			c.setColor(black)
-			c.setFont(font.Mincho, skMetaPt)
 		}
 		c.text(valueX, s.y, line)
 		s.y += lineH
