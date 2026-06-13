@@ -54,9 +54,9 @@ education:
 work:
   - { year: 2013, month: 4, value: 見本ゲームス株式会社 入社 }
   - { year: 2016, month: 3, value: 見本ゲームス株式会社 退職 }
-  - { year: 2016, month: 4, value: 株式会社アプリスタジオ 入社 }
-  - { year: 2020, month: 3, value: 株式会社アプリスタジオ 退職 }
-  - { year: 2020, month: 4, value: クラウドモバイル株式会社 入社 }
+  - { year: 2016, month: 4, value: 株式会社見本アプリ 入社 }
+  - { year: 2020, month: 3, value: 株式会社見本アプリ 退職 }
+  - { year: 2020, month: 4, value: 見本モバイル株式会社 入社 }
   - { value: 現在に至る }
 
 # 免許・資格（履歴書）。
@@ -119,7 +119,7 @@ career:
     - { ja: モバイルチームのテックリード・採用・育成, en: Mobile team tech lead, hiring and mentoring }
 
   histories:
-    - company: { ja: クラウドモバイル株式会社, en: CloudMobile Inc. }
+    - company: { ja: 見本モバイル株式会社, en: Mihon Mobile Inc. }
       period: { ja: 2020年4月 - 現在, en: Apr 2020 - Present }
       role: { ja: モバイルテックリード, en: Mobile Tech Lead }
       summary:
@@ -165,7 +165,7 @@ career:
               from monthly to weekly.
           tech: [Fastlane, Bitrise, GitHub Actions]
 
-    - company: { ja: 株式会社アプリスタジオ, en: AppStudio Co., Ltd. }
+    - company: { ja: 株式会社見本アプリ, en: Mihon App Co., Ltd. }
       period: { ja: 2016年4月 - 2020年3月, en: Apr 2016 - Mar 2020 }
       role: { ja: iOS / Android エンジニア, en: iOS / Android Engineer }
       summary:
