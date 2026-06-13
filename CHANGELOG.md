@@ -7,11 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed the 職務経歴書 template from `career-history` to `work-history`;
+  `career-history` and `職務経歴書` still work as aliases.
+
 ### Fixed
 
 - The 履歴書 no longer silently drops 学歴・職歴 or 免許・資格 rows that exceed one
   page; the tables now flow onto additional pages, and the free-text fields can
   no longer be pushed off the page.
+- Free-text fields (趣味・特技, 志望動機, 本人希望記入欄) grow to fit their content and
+  split across pages instead of overrunning the box and the next field.
+- Over-long table cells and personal-block values are truncated with an ellipsis
+  inside their border instead of crossing it, and a shrink no longer leaks a
+  smaller font size into the following rows.
 - Required-field validation now rejects whitespace-only values (e.g. a
   `profile.name` of only spaces).
 - Long personal-block values (name, address, email, phone) shrink to fit their
