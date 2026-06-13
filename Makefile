@@ -1,4 +1,4 @@
-.PHONY: build test test-e2e lint tools clean help
+.PHONY: build test test-e2e lint tools demo clean help
 
 APP        = career
 VERSION    = $(shell git describe --tags --abbrev=0 2>/dev/null || echo dev)
@@ -27,6 +27,12 @@ tools: ## Install developer tools (linter, coverage, shellspec for e2e)
 	$(GO_INSTALL) github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	$(GO_INSTALL) github.com/k1LoW/octocov@latest
 	curl -fsSL https://git.io/shellspec | sh -s 0.28.1 --yes
+
+demo: build ## Regenerate the README demo GIF from docs/demo.tape (needs vhs)
+	@command -v vhs >/dev/null || { echo 'vhs is required: go install github.com/charmbracelet/vhs@latest'; exit 1; }
+	vhs docs/demo.tape
+	-rm -f cv.pdf japanese-resume.pdf career-history.pdf
+	@echo 'Regenerated image/demo.gif'
 
 clean: ## Clean build and test artifacts
 	-rm -rf $(APP) coverage.out coverage.html *.pdf
