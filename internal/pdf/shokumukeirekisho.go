@@ -145,8 +145,20 @@ func (s *shokumuRenderer) historySection() {
 	}
 	s.heading("職務経歴")
 	for i := range histories {
+		if i > 0 {
+			s.companyDivider()
+		}
 		s.companyBlock(&histories[i])
 	}
+}
+
+// companyDivider draws a short centered rule between company entries, with room
+// above and below so it reads as a separator rather than crowding either block.
+func (s *shokumuRenderer) companyDivider() {
+	s.ensure(skLineH * 2)
+	s.y += 5
+	s.c.centerRule(s.y, 24, divider)
+	s.y += 9
 }
 
 func (s *shokumuRenderer) companyBlock(h *resume.CareerHistory) {

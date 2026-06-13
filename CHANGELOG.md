@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A short centered rule separates consecutive company entries in the
+  `work-history` and `cv` documents.
+
 ### Changed
 
 - A blank line between paragraphs in a text field is now kept as a blank line of
