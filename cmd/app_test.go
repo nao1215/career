@@ -71,7 +71,7 @@ func TestRunTemplates(t *testing.T) {
 		t.Fatalf("templates exit = %d, want 0", code)
 	}
 	out := stdout.String()
-	for _, want := range []string{"cv", "japanese-resume", "career-history", "aliases"} {
+	for _, want := range []string{"cv", "japanese-resume", "work-history", "aliases"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("templates output missing %q", want)
 		}
@@ -112,11 +112,11 @@ func TestGenerateCareerHistoryDefaultOutput(t *testing.T) {
 
 	app, _, stderr := newTestApp(dir)
 	// Input via --input, no --output so the default name is used.
-	code := app.Run([]string{"generate", "--input", "resume.yaml", "--template", "career-history"})
+	code := app.Run([]string{"generate", "--input", "resume.yaml", "--template", "work-history"})
 	if code != 0 {
 		t.Fatalf("generate exit = %d, want 0 (stderr=%q)", code, stderr.String())
 	}
-	assertPDFFile(t, filepath.Join(dir, "career-history.pdf"))
+	assertPDFFile(t, filepath.Join(dir, "work-history.pdf"))
 }
 
 func TestGenerateCV(t *testing.T) {
@@ -142,7 +142,7 @@ func TestGenerateAll(t *testing.T) {
 	if code := app.Run([]string{"generate", "resume.yaml", "-t", "all"}); code != 0 {
 		t.Fatalf("generate -t all exit = %d (stderr=%q)", code, stderr.String())
 	}
-	for _, name := range []string{"cv.pdf", "japanese-resume.pdf", "career-history.pdf"} {
+	for _, name := range []string{"cv.pdf", "japanese-resume.pdf", "work-history.pdf"} {
 		assertPDFFile(t, filepath.Join(dir, name))
 	}
 	if n := strings.Count(stdout.String(), "wrote "); n != 3 {
@@ -157,11 +157,11 @@ func TestGenerateMultiple(t *testing.T) {
 
 	app, _, stderr := newTestApp(dir)
 	// Repeated and comma-separated values combine; duplicates collapse.
-	if code := app.Run([]string{"generate", "resume.yaml", "-t", "cv,career-history", "-t", "cv"}); code != 0 {
+	if code := app.Run([]string{"generate", "resume.yaml", "-t", "cv,work-history", "-t", "cv"}); code != 0 {
 		t.Fatalf("generate exit = %d (stderr=%q)", code, stderr.String())
 	}
 	assertPDFFile(t, filepath.Join(dir, "cv.pdf"))
-	assertPDFFile(t, filepath.Join(dir, "career-history.pdf"))
+	assertPDFFile(t, filepath.Join(dir, "work-history.pdf"))
 	if _, err := os.Stat(filepath.Join(dir, "japanese-resume.pdf")); err == nil {
 		t.Error("japanese-resume.pdf was generated but not requested")
 	}

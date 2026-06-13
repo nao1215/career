@@ -127,13 +127,13 @@ func (a *App) runHelp(args []string) int {
 func (a *App) runGenerate(args []string) int {
 	flagSet := newFlagSet("generate", a.stderr)
 	var templateFlags multiFlag
-	flagSet.Var(&templateFlags, "template", "document template: cv, japanese-resume, career-history, or all (repeatable, comma-separated)")
+	flagSet.Var(&templateFlags, "template", "document template: cv, japanese-resume, work-history, or all (repeatable, comma-separated)")
 	flagSet.Var(&templateFlags, "t", "shorthand for --template")
 	input := flagSet.String("input", "", "path to the resume YAML file (defaults to the first argument)")
 	flagSet.StringVar(input, "i", "", "shorthand for --input")
 	output := flagSet.String("output", "", "output PDF path (only valid with a single template; defaults to the template's name)")
 	flagSet.StringVar(output, "o", "", "shorthand for --output")
-	accentFlag := flagSet.String("accent", "", "accent color for cv/career-history: #rrggbb or \"none\" (overrides theme.accent)")
+	accentFlag := flagSet.String("accent", "", "accent color for cv/work-history: #rrggbb or \"none\" (overrides theme.accent)")
 	photoFlag := flagSet.String("photo", "", "portrait image for the 履歴書 (overrides profile.photo)")
 	flagSet.Usage = func() {
 		writeLine(flagSet.Output(), "Render a resume YAML file into one or more CV / 履歴書 / 職務経歴書 PDFs.")

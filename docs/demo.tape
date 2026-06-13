@@ -47,7 +47,7 @@ Type "career generate examples/resume.yaml --template japanese-resume"
 Sleep 300ms
 Enter
 Sleep 1500ms
-Type "career generate examples/resume.yaml --template career-history"
+Type "career generate examples/resume.yaml --template work-history"
 Sleep 300ms
 Enter
 Sleep 1800ms

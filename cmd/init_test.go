@@ -98,7 +98,7 @@ func TestInitOutputGenerates(t *testing.T) {
 	if code := app.Run([]string{"init"}); code != 0 {
 		t.Fatalf("init exit = %d", code)
 	}
-	for _, tmpl := range []string{"cv", "japanese-resume", "career-history"} {
+	for _, tmpl := range []string{"cv", "japanese-resume", "work-history"} {
 		out := tmpl + ".pdf"
 		if code := app.Run([]string{"generate", "resume.yaml", "-t", tmpl, "-o", out}); code != 0 {
 			t.Fatalf("generate %s exit = %d (stderr=%q)", tmpl, code, stderr.String())

@@ -2,6 +2,7 @@ package pdf
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/nao1215/career/internal/resume"
@@ -114,6 +115,20 @@ func TestRirekishoPaginatesWithoutDropping(t *testing.T) {
 	// renderer must add pages instead of dropping rows.
 	if got := pageCount(t, big); got <= 2 {
 		t.Fatalf("large resume pages = %d, want > 2 (rows must not be dropped)", got)
+	}
+}
+
+// TestRirekishoFreeTextDoesNotOverflow guards the regression where a long
+// free-text field overran its box and the page. A very long 志望動機 must push
+// content onto additional pages rather than overlapping the next field.
+func TestRirekishoFreeTextDoesNotOverflow(t *testing.T) {
+	t.Parallel()
+
+	res := sampleResume()
+	res.Rireki.Motivation = strings.Repeat("長い志望動機のテキストをここに書き連ねます。", 120)
+
+	if got := pageCount(t, res); got <= 2 {
+		t.Fatalf("resume with a long free-text field pages = %d, want > 2", got)
 	}
 }
 

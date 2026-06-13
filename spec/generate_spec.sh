@@ -43,9 +43,9 @@ Describe 'career generate'
     End
   End
 
-  Describe 'career-history'
+  Describe 'work-history'
     It 'renders a PDF using --input and the default output name'
-      When run career generate --input "$WORK/resume.yaml" --template career-history --output "$WORK/ch.pdf"
+      When run career generate --input "$WORK/resume.yaml" --template work-history --output "$WORK/ch.pdf"
       The status should be success
       The output should include 'wrote'
       The path "$WORK/ch.pdf" should be exist
@@ -59,10 +59,10 @@ Describe 'career generate'
       The status should be success
       The output should include 'cv'
       The output should include 'japanese-resume'
-      The output should include 'career-history'
+      The output should include 'work-history'
       The path "$WORK/cv.pdf" should be exist
       The path "$WORK/japanese-resume.pdf" should be exist
-      The path "$WORK/career-history.pdf" should be exist
+      The path "$WORK/work-history.pdf" should be exist
     End
   End
 

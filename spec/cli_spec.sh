@@ -25,7 +25,7 @@ Describe 'career CLI'
       The status should be success
       The output should include 'cv'
       The output should include 'japanese-resume'
-      The output should include 'career-history'
+      The output should include 'work-history'
     End
   End
 

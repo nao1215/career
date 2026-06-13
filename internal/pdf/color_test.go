@@ -55,8 +55,9 @@ func TestLookup(t *testing.T) {
 		{"cv", "cv", true},
 		{"japanese-resume", "japanese-resume", true},
 		{"履歴書", "japanese-resume", true},
-		{"career-history", "career-history", true},
-		{"職務経歴書", "career-history", true},
+		{"work-history", "work-history", true},
+		{"職務経歴書", "work-history", true},
+		{"career-history", "work-history", true}, // legacy alias still resolves
 		{"bogus", "", false},
 	}
 	for _, tt := range tests {

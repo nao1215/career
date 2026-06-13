@@ -95,13 +95,17 @@ func (c *canvas) textWidth(s string) float64 {
 	return w
 }
 
-// textFit draws s at (x, y) in the Mincho font, shrinking from size down toward
-// minSize until the text fits within maxWidth. It keeps long values (addresses,
-// emails) from overflowing their cell.
+// textFit draws s at (x, y) in the Mincho font, shrinking from size toward
+// minSize until it fits within maxWidth; if it still does not fit at minSize the
+// text is truncated with an ellipsis so it never crosses the cell border. The
+// font in effect before the call is restored, so a shrink does not leak into
+// later draws.
 func (c *canvas) textFit(x, y, maxWidth float64, s string, size, minSize float64) {
 	if s == "" {
 		return
 	}
+	prevFont, prevSize := c.curFont, c.curSize
+
 	sz := size
 	for sz > minSize {
 		c.setFont(font.Mincho, sz)
@@ -111,7 +115,27 @@ func (c *canvas) textFit(x, y, maxWidth float64, s string, size, minSize float64
 		sz -= 0.5
 	}
 	c.setFont(font.Mincho, sz)
-	c.text(x, y, s)
+	c.text(x, y, c.truncateToWidth(s, maxWidth))
+
+	if prevFont != "" {
+		c.setFont(prevFont, prevSize)
+	}
+}
+
+// truncateToWidth shortens s with a trailing ellipsis until it fits maxWidth at
+// the current font. It returns s unchanged when it already fits.
+func (c *canvas) truncateToWidth(s string, maxWidth float64) string {
+	if c.textWidth(s) <= maxWidth {
+		return s
+	}
+	runes := []rune(s)
+	for len(runes) > 0 {
+		runes = runes[:len(runes)-1]
+		if c.textWidth(string(runes)+"…") <= maxWidth {
+			return string(runes) + "…"
+		}
+	}
+	return "…"
 }
 
 // textRight draws s so its right edge sits at xRight.
@@ -206,14 +230,4 @@ func isCJK(r rune) bool {
 		return true
 	}
 	return false
-}
-
-// paragraph draws wrapped text starting at (x, y) within maxWidth, advancing y
-// by lineHeight per line. It returns the y position just below the last line.
-func (c *canvas) paragraph(x, y, maxWidth, lineHeight float64, s string) float64 {
-	for _, line := range c.wrap(s, maxWidth) {
-		c.text(x, y, line)
-		y += lineHeight
-	}
-	return y
 }

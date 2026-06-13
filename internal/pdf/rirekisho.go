@@ -368,18 +368,66 @@ func (r *rirekishoRenderer) summaryBox(top float64) {
 	c.text(x3+6, top+9, rk.SupportingSpouse)
 }
 
-// freeField draws a labelled free-text box of the given height, breaking to a
-// new page first when it would not fit, and advances the cursor below it.
-func (r *rirekishoRenderer) freeField(label, body string, h float64) {
-	r.ensure(h)
+// freeField draws a labelled free-text box at least minH tall. The box grows to
+// fit its wrapped body and splits across pages when the body is long, so the
+// text never overruns the box or the page.
+func (r *rirekishoRenderer) freeField(label, body string, minH float64) {
 	c := r.c
-	top := r.y
-	c.rect(rkLeft, top, rkWidth, h)
-	c.setFont(font.Mincho, 9)
-	c.text(rkLeft+2, top+2, label)
+	const (
+		labelH = 7.0 // reserved for the label at the top of the first segment
+		lineH  = 6.0
+		padX   = 3.0
+		padBot = 3.0
+		gap    = 5.0
+	)
+
+	c.setFont(font.Mincho, 11)
+	var lines []string
 	if strings.TrimSpace(body) != "" {
-		c.setFont(font.Mincho, 11)
-		c.paragraph(rkLeft+3, top+8, rkWidth-6, 6, strings.TrimRight(body, "\n"))
+		lines = c.wrap(strings.TrimRight(body, "\n"), rkWidth-2*padX)
 	}
-	r.y = top + h + 5
+
+	li := 0
+	first := true
+	for {
+		r.ensure(labelH + lineH + padBot) // room for the label area and one line
+		top := r.y
+		textTop := top + padBot
+		if first {
+			textTop = top + labelH
+		}
+
+		fit := int((rkBottom - textTop - padBot) / lineH)
+		if fit < 1 {
+			fit = 1
+		}
+		drawN := len(lines) - li
+		isLast := true
+		if drawN > fit {
+			drawN, isLast = fit, false
+		}
+
+		segH := (textTop - top) + float64(drawN)*lineH + padBot
+		if isLast && first && segH < minH {
+			segH = minH
+		}
+
+		c.rect(rkLeft, top, rkWidth, segH)
+		if first {
+			c.setFont(font.Mincho, 9)
+			c.text(rkLeft+2, top+2, label)
+		}
+		c.setFont(font.Mincho, 11)
+		for i := 0; i < drawN; i++ {
+			c.text(rkLeft+padX, textTop+float64(i)*lineH, lines[li])
+			li++
+		}
+
+		r.y = top + segH + gap
+		first = false
+		if isLast {
+			return
+		}
+		r.newPage()
+	}
 }

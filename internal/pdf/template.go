@@ -60,7 +60,7 @@ var templates = []Template{
 	{
 		Name:          "japanese-resume",
 		Aliases:       []string{"履歴書"},
-		Description:   "JIS-style Japanese 履歴書 (A4, 2 pages)",
+		Description:   "JIS-style Japanese 履歴書 (A4)",
 		DefaultOutput: "japanese-resume.pdf",
 		lang:          resume.LangJA,
 		usesPhoto:     true,
@@ -68,10 +68,10 @@ var templates = []Template{
 		validate:      (*resume.Resume).ValidateRireki,
 	},
 	{
-		Name:          "career-history",
-		Aliases:       []string{"職務経歴書"},
+		Name:          "work-history",
+		Aliases:       []string{"職務経歴書", "career-history"},
 		Description:   "Japanese 職務経歴書 (work history with projects)",
-		DefaultOutput: "career-history.pdf",
+		DefaultOutput: "work-history.pdf",
 		lang:          resume.LangJA,
 		render:        RenderShokumukeirekisho,
 		validate:      (*resume.Resume).ValidateCareer,
