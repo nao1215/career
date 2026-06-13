@@ -9,7 +9,8 @@
 # read "ja", and either falls back to whatever is present.
 #
 # Long fields may be wrapped over several lines for readability; the renderer
-# re-flows them. A blank line is an intentional paragraph break.
+# re-flows them. A blank line is a paragraph break, and a line starting with a
+# bullet (・ - * •) is kept as its own list item.
 
 # 作成日（履歴書・職務経歴書の右上）。CVでは使われません。
 date: 2026年6月13日現在
@@ -51,186 +52,199 @@ education:
 
 # 職歴（履歴書の学歴・職歴欄）。
 work:
-  - { year: 2013, month: 4, value: 見本デバイス株式会社 入社 }
-  - { year: 2016, month: 3, value: 見本デバイス株式会社 退職 }
-  - { year: 2016, month: 4, value: 株式会社サンプルソフト 入社 }
-  - { year: 2020, month: 3, value: 株式会社サンプルソフト 退職 }
-  - { year: 2020, month: 4, value: クラウドテック株式会社 入社 }
+  - { year: 2013, month: 4, value: 見本ゲームス株式会社 入社 }
+  - { year: 2016, month: 3, value: 見本ゲームス株式会社 退職 }
+  - { year: 2016, month: 4, value: 株式会社アプリスタジオ 入社 }
+  - { year: 2020, month: 3, value: 株式会社アプリスタジオ 退職 }
+  - { year: 2020, month: 4, value: クラウドモバイル株式会社 入社 }
   - { value: 現在に至る }
 
 # 免許・資格（履歴書）。
 licenses:
   - { year: 2013, month: 6,  value: 普通自動車第一種運転免許 取得 }
   - { year: 2015, month: 10, value: 応用情報技術者試験 取得 }
-  - { year: 2018, month: 7,  value: TOEIC 公開テスト スコア850点 取得 }
+  - { year: 2018, month: 7,  value: TOEIC 公開テスト スコア880点 取得 }
+  - { year: 2021, month: 4,  value: Google Associate Android Developer 認定 }
   - { year: 2022, month: 8,  value: AWS Certified Solutions Architect – Associate 取得 }
-  - { year: 2023, month: 5,  value: AWS Certified Developer – Associate 取得 }
 
-# 履歴書だけで使う項目（日本語）。
+# 履歴書だけで使う項目（日本語）。複数行や箇条書きも書けます。
 rireki:
-  commuting_time: 45分
+  commuting_time: 60分
   dependents: ２人
   spouse: 有
   supporting_spouse: 有
   hobby: |
-    読書、ランニング、個人開発。休日はオープンソースへのコントリビュートを
-    楽しんでいます。
+    個人アプリ開発と登山が趣味です。週末はモバイル向けの OSS ライブラリへ
+    コントリビュートしており、技術カンファレンスでの登壇経験もあります。
+
+    特技は、複雑な要件を素早くプロトタイプに落とし込み、チームで検証できる形に
+    することです。
   motivation: |
-    貴社の技術への取り組みと、開発文化に魅力を感じ志望しました。
+    貴社のモバイルプロダクトがユーザー体験を第一に設計されている点に強く共感し、
+    志望しました。
+
+    これまで培ったアプリのパフォーマンス改善と、開発組織づくりの経験を活かして、
+    プロダクトの継続的な成長に貢献したいと考えています。
   request: |
-    フルリモート勤務を希望します。
+    下記を希望いたします。
+    ・勤務形態：フルリモート（月1回程度の出社は可能）
+    ・職種：モバイルアプリエンジニア／テックリード
+    ・その他の条件：貴社の規定に従います
 
 # 職務経歴書・CVで使う項目。テキストは ja / en を併記できます。
 career:
   summary:
     ja: |
-      Web アプリケーション開発を中心に約12年の経験を持つソフトウェアエンジニアです。
-      組み込み開発からキャリアを始め、受託開発を経て、現在は SaaS プロダクトの
-      バックエンドとクラウド基盤を一貫して担当しています。
+      iOS・Android を中心に約12年の経験を持つモバイルアプリケーションエンジニアです。
+      ゲームクライアント開発からキャリアを始め、受託・自社開発を経て、現在は月間数百万
+      ユーザー規模のアプリでモバイル開発をテックリードとして牽引しています。
 
-      要件定義から運用までを一人称で進められること、チームの開発プロセス改善を
-      得意としています。
+      パフォーマンス改善とアーキテクチャ設計、CI/CD の整備、チームの採用・育成までを
+      一貫して担えることが強みです。
     en: |
-      Software engineer with about 12 years of experience centered on web
-      application development. Starting in embedded systems and moving through
-      contract development, I now own the backend and cloud platform of a SaaS
-      product end to end.
+      Mobile application engineer with about 12 years of experience across iOS and
+      Android. Starting in game client development and moving through contract and
+      in-house work, I now lead mobile development as a tech lead on an app with
+      several million monthly users.
 
-      I am comfortable driving work from requirements through to operation, and I
-      enjoy improving a team's development process.
+      My strengths span performance tuning, architecture, CI/CD, and growing the
+      team through hiring and mentoring.
 
   skills:
-    - { ja: Go / TypeScript によるサーバーサイド開発, en: Backend development in Go and TypeScript }
-    - { ja: AWS（ECS / Lambda / DynamoDB / CloudFormation 等）を用いた設計・構築・運用, en: Design, build and operation on AWS (ECS / Lambda / DynamoDB / CloudFormation) }
-    - { ja: マイクロサービスの設計・移行とリファクタリング, en: Microservice design, migration and refactoring }
-    - { ja: CI/CD・テスト自動化・可観測性の整備, en: CI/CD, test automation and observability }
-    - { ja: テクニカル／エンジニアリングマネジメント（要件調整・採用・育成・1on1）, en: Technical and engineering management (requirements, hiring, mentoring, 1on1) }
-    - { ja: 組み込み Linux 開発（カーネル、デバイスドライバ）, en: Embedded Linux development (kernel, device drivers) }
+    - { ja: Swift / Kotlin による iOS・Android ネイティブ開発, en: Native iOS and Android development in Swift and Kotlin }
+    - { ja: Flutter によるクロスプラットフォーム開発, en: Cross-platform development with Flutter }
+    - { ja: モバイルアプリのパフォーマンス改善（起動・描画・メモリ・アプリサイズ）, en: Mobile performance tuning (startup, rendering, memory, app size) }
+    - { ja: Fastlane / Bitrise を用いたモバイル CI/CD とテスト自動化, en: Mobile CI/CD and test automation with Fastlane and Bitrise }
+    - { ja: アプリのグロース（A/Bテスト、計測基盤、ストア最適化）, en: App growth (A/B testing, analytics, store optimization) }
+    - { ja: モバイルチームのテックリード・採用・育成, en: Mobile team tech lead, hiring and mentoring }
 
   histories:
-    - company: { ja: クラウドテック株式会社, en: CloudTech Inc. }
+    - company: { ja: クラウドモバイル株式会社, en: CloudMobile Inc. }
       period: { ja: 2020年4月 - 現在, en: Apr 2020 - Present }
-      role: { ja: バックエンドエンジニア / テックリード, en: Backend Engineer / Tech Lead }
+      role: { ja: モバイルテックリード, en: Mobile Tech Lead }
       summary:
-        ja: SaaS プロダクトの開発・運用に従事し、バックエンドとクラウド基盤を担当。
-        en: Development and operation of a SaaS product, owning the backend and cloud platform.
+        ja: 月間数百万ユーザー規模のアプリのモバイル開発を、テックリードとして牽引。
+        en: Lead mobile development of an app with several million monthly users as tech lead.
       projects:
-        - title: { ja: 業務管理 SaaS の API 開発, en: Business management SaaS API }
+        - title: { ja: スーパーアプリの開発・グロース, en: Super app development and growth }
           period: { ja: 2020年4月 - 現在, en: Apr 2020 - Present }
-          role: { ja: バックエンド（5名）, en: Backend (team of 5) }
+          role: { ja: テックリード（モバイル8名）, en: Tech lead (mobile team of 8) }
           description:
             ja: |
-              Go による API の設計・実装と、AWS 上のインフラ運用を担当。可用性と性能を
-              継続的に改善し、増加するトラフィックに耐えるアーキテクチャへ段階的に移行した。
+              Flutter とネイティブを組み合わせたアプリの設計・実装をリード。クラッシュ
+              フリー率を 99.9% まで改善し、起動時間を 40% 短縮。A/B テスト基盤を整え、
+              主要 KPI を継続的に改善した。
             en: |
-              Designed and built APIs in Go and operated the AWS infrastructure,
-              continuously improving availability and performance and gradually
-              evolving the architecture to handle growing traffic.
-          tech: [Go, AWS, PostgreSQL, Terraform]
-        - title: { ja: 課金・サブスクリプション基盤の構築, en: Billing and subscription platform }
-          period: { ja: 2021年10月 - 2022年6月, en: Oct 2021 - Jun 2022 }
+              Led the design and implementation of an app combining Flutter and
+              native code. Improved the crash-free rate to 99.9% and cut startup
+              time by 40%, and built an A/B testing foundation that steadily
+              improved key KPIs.
+          tech: [Flutter, Swift, Kotlin, Firebase]
+        - title: { ja: 決済機能のネイティブ統合, en: Native payment integration }
+          period: { ja: 2021年7月 - 2022年3月, en: Jul 2021 - Mar 2022 }
           role: { ja: 設計・実装リード, en: Design and implementation lead }
           description:
             ja: |
-              サブスクリプション課金基盤を新規に設計・構築。決済代行サービスと連携し、
-              プラン変更や日割り計算などの複雑な要件を整理してドメインモデルに落とし込んだ。
+              iOS・Android 双方へ決済 SDK をネイティブ統合。セキュリティ要件を整理し、
+              リリース後の決済エラー率を大幅に低減した。
             en: |
-              Designed and built a new subscription billing platform, integrating a
-              payment provider and modeling complex requirements such as plan
-              changes and proration.
-          tech: [Go, AWS Lambda, DynamoDB, Stripe]
-        - title: { ja: 監視・SLO 整備とインシデント対応, en: Observability and SLOs }
-          period: { ja: 2022年7月 - 現在, en: Jul 2022 - Present }
-          role: { ja: SRE 兼務, en: SRE (part-time) }
+              Integrated a payment SDK natively into both iOS and Android, organized
+              the security requirements, and greatly reduced post-release payment
+              errors.
+          tech: [Swift, Kotlin, StoreKit]
+        - title: { ja: モバイル CI/CD 基盤の刷新, en: Mobile CI/CD platform rebuild }
+          period: { ja: 2022年4月 - 現在, en: Apr 2022 - Present }
+          role: { ja: 基盤オーナー, en: Platform owner }
           description:
             ja: |
-              SLO を定義し、ダッシュボードとアラートを整備。インシデント対応のフローを
-              標準化し、平均復旧時間を短縮した。
+              Fastlane と Bitrise を用いてビルド・配信・テストを自動化。手動だった
+              リリース作業を整理し、リリース頻度を月次から週次へ引き上げた。
             en: |
-              Defined SLOs, built dashboards and alerts, standardized the incident
-              response flow, and reduced the mean time to recovery.
-          tech: [Datadog, Terraform, AWS]
+              Automated build, distribution and testing with Fastlane and Bitrise,
+              streamlined a manual release process, and raised the release cadence
+              from monthly to weekly.
+          tech: [Fastlane, Bitrise, GitHub Actions]
 
-    - company: { ja: 株式会社サンプルソフト, en: SampleSoft Co., Ltd. }
+    - company: { ja: 株式会社アプリスタジオ, en: AppStudio Co., Ltd. }
       period: { ja: 2016年4月 - 2020年3月, en: Apr 2016 - Mar 2020 }
-      role: { ja: ソフトウェアエンジニア, en: Software Engineer }
+      role: { ja: iOS / Android エンジニア, en: iOS / Android Engineer }
       summary:
-        ja: 受託の Web アプリケーション開発に従事し、複数案件の設計から運用までを担当。
-        en: Web application development for client projects, owning design through operation across several engagements.
+        ja: 受託・自社の複数アプリを、設計から運用まで一貫して担当。
+        en: Owned several contract and in-house apps from design through operation.
       projects:
-        - title: { ja: EC サイトの開発・保守, en: E-commerce site development and maintenance }
+        - title: { ja: フリマアプリの新規開発, en: Marketplace app from scratch }
           period: { ja: 2016年4月 - 2018年3月, en: Apr 2016 - Mar 2018 }
-          role: { ja: フルスタック（4名）, en: Full-stack (team of 4) }
+          role: { ja: iOS / Android（4名）, en: iOS / Android (team of 4) }
           description:
             ja: |
-              要件定義から実装・テスト・リリースまでを担当。商品検索やカート機能の改善を
-              通じて、コンバージョン率の向上に貢献した。
+              フリマアプリを Swift / Kotlin でフルスクラッチ開発。公開後にダウンロード
+              数 100 万を突破し、安定運用に貢献した。
             en: |
-              Owned the full cycle from requirements to release, and improved
-              product search and cart features to lift the conversion rate.
-          tech: [TypeScript, Node.js, MySQL]
-        - title: { ja: レシピアプリのバックエンド開発, en: Recipe app backend }
+              Built a marketplace app from scratch in Swift and Kotlin; it passed one
+              million downloads after launch and ran reliably in production.
+          tech: [Swift, Kotlin, Realm]
+        - title: { ja: 動画配信アプリのパフォーマンス改善, en: Video streaming app performance }
           period: { ja: 2018年4月 - 2019年6月, en: Apr 2018 - Jun 2019 }
-          role: { ja: バックエンド, en: Backend }
+          role: { ja: パフォーマンス改善担当, en: Performance lead }
           description:
             ja: |
-              スマートフォン向けレシピアプリのバックエンドをフルスクラッチで開発。
-              大量のレシピデータを扱うバッチ処理と API を実装した。
+              再生開始までの時間を 50% 短縮し、メモリ使用量を削減。プロファイリングを
+              通じてボトルネックを特定し、描画とキャッシュを最適化した。
             en: |
-              Built the backend of a mobile recipe app from scratch, implementing
-              batch jobs and APIs that handle large recipe datasets.
-          tech: [Go, AWS, MySQL]
-        - title: { ja: 社内向け管理画面の刷新, en: Internal admin console rebuild }
+              Cut time-to-first-frame by 50% and reduced memory use, profiling to
+              find bottlenecks and optimizing rendering and caching.
+          tech: [Swift, AVFoundation, ExoPlayer]
+        - title: { ja: 共通 UI コンポーネントライブラリの整備, en: Shared UI component library }
           period: { ja: 2019年7月 - 2020年3月, en: Jul 2019 - Mar 2020 }
-          role: { ja: フロントエンド兼バックエンド, en: Front-end and back-end }
+          role: { ja: 設計・実装, en: Design and implementation }
           description:
             ja: |
-              レガシーな管理画面を段階的に刷新。フロントエンドを React へ移行し、
-              運用担当者の作業時間を削減した。
+              複数アプリで再利用できる UI コンポーネントライブラリを整備し、新規画面の
+              実装速度を向上させた。
             en: |
-              Incrementally rebuilt a legacy admin console, migrating the front-end
-              to React and reducing operator workload.
-          tech: [TypeScript, React, Go]
+              Built a reusable UI component library shared across apps, speeding up
+              the implementation of new screens.
+          tech: [Swift, Kotlin]
 
-    - company: { ja: 見本デバイス株式会社, en: Mihon Devices Inc. }
+    - company: { ja: 見本ゲームス株式会社, en: Mihon Games Inc. }
       period: { ja: 2013年4月 - 2016年3月, en: Apr 2013 - Mar 2016 }
-      role: { ja: 組み込みソフトウェアエンジニア, en: Embedded Software Engineer }
+      role: { ja: ゲームクライアントエンジニア, en: Game Client Engineer }
       summary:
-        ja: 組み込み機器のファームウェアおよびデバイスドライバ開発に従事。
-        en: Firmware and device-driver development for embedded equipment.
+        ja: スマートフォン向けゲームのクライアント開発に従事。
+        en: Client development for smartphone games.
       projects:
-        - title: { ja: ネットワーク機器のファームウェア開発, en: Network device firmware }
+        - title: { ja: スマホ向け RPG のクライアント開発, en: Smartphone RPG client }
           period: { ja: 2013年4月 - 2015年3月, en: Apr 2013 - Mar 2015 }
-          role: { ja: ファームウェア, en: Firmware }
+          role: { ja: クライアント, en: Client }
           description:
             ja: |
-              ネットワーク機器のファームウェアを C 言語で開発。限られたメモリ環境での
-              最適化と、長期運用に耐える品質づくりに取り組んだ。
+              Unity / C# でスマホ向け RPG のクライアントを開発。描画処理を最適化し、
+              低スペック端末でも安定して動作するよう改善した。
             en: |
-              Developed network device firmware in C, optimizing for constrained
-              memory and building quality for long-term operation.
-          tech: [C, RTOS]
-        - title: { ja: Linux デバイスドライバの実装, en: Linux device driver development }
+              Developed a smartphone RPG client in Unity / C#, optimizing rendering so
+              it ran smoothly even on low-end devices.
+          tech: [Unity, "C#"]
+        - title: { ja: リアルタイム対戦機能の実装, en: Real-time multiplayer }
           period: { ja: 2015年4月 - 2016年3月, en: Apr 2015 - Mar 2016 }
-          role: { ja: デバイスドライバ, en: Device drivers }
+          role: { ja: クライアント, en: Client }
           description:
             ja: |
-              新規ボード向けの Linux デバイスドライバを実装。カーネルの調査とデバッグを
-              通じて、ハードウェアの安定動作を実現した。
+              リアルタイム対戦機能をクライアント側で実装。通信の遅延対策を行い、快適な
+              対戦体験を実現した。
             en: |
-              Implemented Linux device drivers for a new board, investigating and
-              debugging the kernel to achieve stable hardware operation.
-          tech: [C, Linux Kernel]
+              Implemented real-time multiplayer on the client, mitigating network
+              latency to deliver a smooth match experience.
+          tech: [Unity, "C#"]
 
   certifications:
     - { ja: AWS Certified Solutions Architect – Associate, en: AWS Certified Solutions Architect – Associate }
-    - { ja: AWS Certified Developer – Associate, en: AWS Certified Developer – Associate }
+    - { ja: Google Associate Android Developer, en: Google Associate Android Developer }
     - { ja: 応用情報技術者試験, en: Applied Information Technology Engineer (Japan) }
-    - { ja: TOEIC 公開テスト 850点, en: TOEIC 850 }
+    - { ja: TOEIC 公開テスト 880点, en: TOEIC 880 }
 
   publications:
-    - { ja: 技術カンファレンスでマイクロサービス移行について登壇, en: Spoke on microservice migration at a tech conference }
-    - { ja: 社内技術ブログでバックエンド設計の記事を執筆, en: Authored internal engineering blog posts on backend design }
+    - { ja: モバイルカンファレンスでアプリのパフォーマンス改善について登壇, en: Spoke on mobile app performance at a mobile conference }
+    - { ja: 技術ブログでモバイルアーキテクチャの記事を執筆, en: Authored blog posts on mobile architecture }
 
   links:
     - { ja: "GitHub: https://github.com/example", en: "GitHub: https://github.com/example" }
@@ -238,13 +252,15 @@ career:
 
   self_pr:
     ja: |
-      設計から運用までを一人称で完遂することを得意とし、継続的な学習を信条としています。
+      ユーザー体験とパフォーマンスにこだわり、設計から運用までを一人称で完遂することを
+      得意としています。
 
-      組み込みからクラウドまで幅広いレイヤーの経験を活かし、チームの技術的な意思決定に
-      貢献できます。
+      テックリードとして、技術的な意思決定とメンバーの育成の双方に責任を持ち、チームの
+      アウトプットを最大化することを重視しています。継続的な学習を信条としています。
     en: |
-      I own work end to end from design to operation, and I value continuous
-      learning.
+      I care deeply about user experience and performance, and I own work from
+      design through to operation.
 
-      With experience spanning embedded systems to the cloud, I can contribute to a
-      team's technical decisions across the stack.
+      As a tech lead I take responsibility for both technical decisions and growing
+      the team, focused on maximizing the team's output, and I value continuous
+      learning.
