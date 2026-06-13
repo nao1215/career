@@ -218,9 +218,3 @@ text ships with the fonts under
 [`internal/font/assets`](./internal/font/assets).
 
 The career source code is released under the [MIT License](./LICENSE).
-
-## Acknowledgements
-
-The 履歴書 layout is inspired by
-[kaityo256/yaml_cv](https://github.com/kaityo256/yaml_cv), a YAML-driven résumé
-generator written in Ruby.
