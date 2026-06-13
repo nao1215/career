@@ -105,18 +105,38 @@ func TestGenerateRirekisho(t *testing.T) {
 	assertPDFFile(t, filepath.Join(dir, "out.pdf"))
 }
 
-func TestGenerateCareerHistoryDefaultOutput(t *testing.T) {
+func TestGenerateWorkHistoryDefaultOutput(t *testing.T) {
 	t.Parallel()
 	dir := t.TempDir()
 	writeSample(t, dir)
 
 	app, _, stderr := newTestApp(dir)
-	// Input via --input, no --output so the default name is used.
+	// work-history is the canonical name; no --output uses its default file.
 	code := app.Run([]string{"generate", "--input", "resume.yaml", "--template", "work-history"})
 	if code != 0 {
 		t.Fatalf("generate exit = %d, want 0 (stderr=%q)", code, stderr.String())
 	}
 	assertPDFFile(t, filepath.Join(dir, "work-history.pdf"))
+}
+
+// TestGenerateLegacyAliasCareerHistory verifies the old template name still
+// produces a PDF end-to-end, not just via Lookup, so renaming stays backward
+// compatible.
+func TestGenerateLegacyAliasCareerHistory(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+
+	app, stdout, stderr := newTestApp(dir)
+	code := app.Run([]string{"generate", "resume.yaml", "-t", "career-history", "-o", "ch.pdf"})
+	if code != 0 {
+		t.Fatalf("generate -t career-history exit = %d (stderr=%q)", code, stderr.String())
+	}
+	// The alias resolves to the canonical template name in the output message.
+	if !strings.Contains(stdout.String(), "work-history") {
+		t.Errorf("expected the alias to resolve to work-history, got %q", stdout.String())
+	}
+	assertPDFFile(t, filepath.Join(dir, "ch.pdf"))
 }
 
 func TestGenerateCV(t *testing.T) {

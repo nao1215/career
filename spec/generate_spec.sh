@@ -50,6 +50,20 @@ Describe 'career generate'
       The output should include 'wrote'
       The path "$WORK/ch.pdf" should be exist
     End
+
+    It 'still accepts the legacy career-history alias'
+      When run career generate "$WORK/resume.yaml" -t career-history -o "$WORK/legacy.pdf"
+      The status should be success
+      The output should include 'work-history'
+      The path "$WORK/legacy.pdf" should be exist
+    End
+
+    It 'accepts the 職務経歴書 alias'
+      When run career generate "$WORK/resume.yaml" -t 職務経歴書 -o "$WORK/ja.pdf"
+      The status should be success
+      The output should include 'wrote'
+      The path "$WORK/ja.pdf" should be exist
+    End
   End
 
   Describe 'multiple templates'

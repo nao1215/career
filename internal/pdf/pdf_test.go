@@ -132,6 +132,44 @@ func TestRirekishoFreeTextDoesNotOverflow(t *testing.T) {
 	}
 }
 
+// TestRirekishoLicensesPaginate guards the second High regression: a long
+// 免許・資格 list must spill onto extra pages, and because render() always draws
+// the free-text fields after it, those fields cannot be pushed off the document.
+func TestRirekishoLicensesPaginate(t *testing.T) {
+	t.Parallel()
+
+	res := sampleResume()
+	for i := 0; i < 60; i++ {
+		res.Licenses = append(res.Licenses, resume.HistoryItem{
+			Year:  resume.Flex("2011"),
+			Month: resume.Flex("5"),
+			Value: resume.Plain("資格エントリ"),
+		})
+	}
+	if got := pageCount(t, res); got <= 2 {
+		t.Fatalf("resume with many licenses pages = %d, want > 2", got)
+	}
+}
+
+// TestRirekishoOverlongCellRenders ensures a single very long table cell renders
+// without error; the value is truncated to its cell width (covered in detail by
+// TestTruncateToWidth) rather than crossing the page.
+func TestRirekishoOverlongCellRenders(t *testing.T) {
+	t.Parallel()
+
+	res := sampleResume()
+	res.Work = append(res.Work, resume.HistoryItem{
+		Year:  resume.Flex("2016"),
+		Month: resume.Flex("4"),
+		Value: resume.Plain(strings.Repeat("非常に長い職歴の説明", 40)),
+	})
+	got, err := RenderRirekisho(res, options{lang: resume.LangJA})
+	if err != nil {
+		t.Fatalf("RenderRirekisho() error = %v", err)
+	}
+	assertPDF(t, got)
+}
+
 func TestRenderShokumukeirekisho(t *testing.T) {
 	t.Parallel()
 	got, err := RenderShokumukeirekisho(sampleResume(), options{accent: defaultAccent, accentOn: true})

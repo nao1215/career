@@ -34,6 +34,13 @@ func TestInitWritesStarter(t *testing.T) {
 	if !strings.Contains(body, "年") || !strings.Contains(body, "現在") {
 		t.Errorf("starter date was not filled in: %q", body)
 	}
+	// The guidance must use the current canonical template name, not the old one.
+	if !strings.Contains(body, "work-history") {
+		t.Error("starter guidance does not mention the work-history template")
+	}
+	if strings.Contains(body, "career-history") {
+		t.Error("starter guidance still references the old career-history name")
+	}
 }
 
 func TestInitCustomPath(t *testing.T) {
