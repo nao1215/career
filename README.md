@@ -146,7 +146,8 @@ renders the Japanese 職務経歴書 from the same source.
 
 Long fields can be wrapped over several lines for readability — the renderer
 re-flows them to the page width, joining Japanese lines with no space and Latin
-words with a single space. A **blank line** is an intentional paragraph break.
+words with a single space. A **blank line** starts a new paragraph and is kept as
+a blank line of vertical space in the output.
 
 ```yaml
 career:
