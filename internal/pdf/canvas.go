@@ -154,6 +154,17 @@ func (c *canvas) line(x1, y1, x2, y2 float64) {
 	c.pdf.Line(x1, y1, x2, y2)
 }
 
+// centerRule draws a short horizontal rule of the given width centered in the
+// text column, used as a subtle divider between entries. The stroke color is
+// restored to black afterwards so later rules are unaffected.
+func (c *canvas) centerRule(y, width float64, color rgb) {
+	cx := (skLeft + skRight) / 2
+	c.pdf.SetStrokeColor(color.r, color.g, color.b)
+	c.pdf.SetLineType(solid)
+	c.pdf.Line(cx-width/2, y, cx+width/2, y)
+	c.pdf.SetStrokeColor(black.r, black.g, black.b)
+}
+
 // rect draws an unfilled rectangle with its upper-left corner at (x, y).
 func (c *canvas) rect(x, y, w, h float64) {
 	c.pdf.SetLineType(solid)

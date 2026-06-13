@@ -135,8 +135,20 @@ func (cv *cvRenderer) experience() {
 	}
 	cv.heading("Experience")
 	for i := range histories {
+		if i > 0 {
+			cv.companyDivider()
+		}
 		cv.companyBlock(&histories[i])
 	}
+}
+
+// companyDivider draws a short centered rule between company entries, with room
+// above and below so it reads as a separator rather than crowding either block.
+func (cv *cvRenderer) companyDivider() {
+	cv.ensure(skLineH * 2)
+	cv.y += 5
+	cv.c.centerRule(cv.y, 24, divider)
+	cv.y += 9
 }
 
 func (cv *cvRenderer) companyBlock(h *resume.CareerHistory) {

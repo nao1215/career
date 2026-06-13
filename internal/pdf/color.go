@@ -20,6 +20,9 @@ var (
 	// in the 職務経歴書 so they read as captions and let the black body text stand
 	// out instead of every line looking equally heavy.
 	metaLabel = rgb{0x60, 0x60, 0x60}
+	// divider is a gray for the short centered rule drawn between company
+	// entries; it separates them without competing with the text.
+	divider = rgb{0x88, 0x88, 0x88}
 )
 
 // accent resolves a theme accent setting into a color and whether the accent is
