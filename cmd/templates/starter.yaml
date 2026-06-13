@@ -9,7 +9,7 @@
 # "ja", and either falls back to whatever is present. See examples/resume.yaml
 # in the repository for a fully populated bilingual sample.
 
-date: __DATE__   # 作成日。career init が今日の日付に置き換えます。
+date: __DATE__   # Document date; "career init" fills this with today's date.
 
 # Accent color for cv / work-history. "" = default, "none" = monochrome.
 theme:
