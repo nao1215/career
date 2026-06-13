@@ -71,7 +71,13 @@ func TestRunTemplates(t *testing.T) {
 		t.Fatalf("templates exit = %d, want 0", code)
 	}
 	out := stdout.String()
-	for _, want := range []string{"cv", "japanese-resume", "work-history", "aliases"} {
+	// Canonical names, the "aliases" label, and the documented aliases
+	// (Japanese names plus the legacy career-history) must all be listed so the
+	// command stays in sync with what generate accepts.
+	for _, want := range []string{
+		"cv", "japanese-resume", "work-history", "aliases",
+		"履歴書", "職務経歴書", "career-history",
+	} {
 		if !strings.Contains(out, want) {
 			t.Errorf("templates output missing %q", want)
 		}
@@ -372,8 +378,12 @@ func TestHelpForGenerate(t *testing.T) {
 	if code := app.Run([]string{"help", "generate"}); code != 0 {
 		t.Fatalf("help generate exit = %d, want 0", code)
 	}
-	if !strings.Contains(stdout.String(), "--template") {
-		t.Errorf("help output = %q", stdout.String())
+	out := stdout.String()
+	// The help text must document the flag and the canonical template name.
+	for _, want := range []string{"--template", "work-history"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("help output missing %q: %q", want, out)
+		}
 	}
 }
 

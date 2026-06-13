@@ -27,6 +27,14 @@ Describe 'career CLI'
       The output should include 'japanese-resume'
       The output should include 'work-history'
     End
+
+    It 'documents the aliases generate accepts'
+      When run career templates
+      The status should be success
+      The output should include '履歴書'
+      The output should include '職務経歴書'
+      The output should include 'career-history'
+    End
   End
 
   Describe 'help'
