@@ -143,52 +143,67 @@ func (cv *cvRenderer) companyBlock(h *resume.CareerHistory) {
 	c := cv.c
 	cv.ensure(skLineH * 3)
 
+	// Company name at the left margin; role and summary hang one rail in.
 	c.setFont(font.Gothic, 11.5)
 	c.text(skLeft, cv.y, cv.tr(h.Company))
 	if period := cv.tr(h.Period); period != "" {
-		c.setFont(font.Mincho, 9.5)
+		c.setFont(font.Mincho, skMetaPt)
 		c.textRight(skRight, cv.y+0.8, period)
 	}
-	cv.y += 6
+	cv.y += 6.5
 
 	if role := cv.tr(h.Role); role != "" {
-		c.setFont(font.Mincho, 9.5)
-		cv.flow(skLeft+2, skLineH, role)
+		c.setFont(font.Mincho, skMetaPt)
+		cv.flow(skHistL1, skMetaH, role)
 	}
 	if summary := cv.tr(h.Summary); strings.TrimSpace(summary) != "" {
-		c.setFont(font.Mincho, 9.5)
-		cv.flow(skLeft+2, 5, summary)
+		c.setFont(font.Mincho, skMetaPt)
+		cv.flow(skHistL1, skMetaH, summary)
 	}
-	cv.y += 1
+	cv.y += 3
 
 	for i := range h.Projects {
 		cv.projectBlock(&h.Projects[i])
 	}
-	cv.y += 3
+	cv.y += 4
 }
 
 func (cv *cvRenderer) projectBlock(p *resume.Project) {
 	c := cv.c
 	cv.ensure(skLineH * 2)
+	cv.y += 1.5 // breathing room above each project
 
+	// Bullet hangs on the L1 rail; the title and body align on the L2 rail.
 	c.setFont(font.Gothic, 10)
+	c.setColor(cv.accentColor())
+	c.text(skHistL1, cv.y, "•")
+	c.setColor(black)
 	header := cv.tr(p.Title)
 	if period := cv.tr(p.Period); period != "" {
 		header += " (" + period + ")"
 	}
-	cv.flow(skLeft+3, skLineH, "• "+header)
+	cv.flow(skHistL2, skLineH, header)
 
-	c.setFont(font.Mincho, 9.5)
+	// Role, then tech, then the description as its own spaced-out paragraph.
 	if role := cv.tr(p.Role); role != "" {
-		cv.flow(skLeft+6, 5, role)
-	}
-	if desc := cv.tr(p.Description); strings.TrimSpace(desc) != "" {
-		cv.flow(skLeft+6, 5, desc)
+		c.setFont(font.Mincho, skMetaPt)
+		cv.flow(skHistL2, skMetaH, role)
 	}
 	if len(p.Tech) > 0 {
-		cv.flow(skLeft+6, 5, "Tech: "+strings.Join(p.Tech, ", "))
+		cv.metaLine(skHistL2, skMetaH, "Tech", strings.Join(p.Tech, " / "))
 	}
-	cv.y += 1.5
+	if desc := cv.tr(p.Description); strings.TrimSpace(desc) != "" {
+		cv.y += 1.2 // separate the detail from the metadata above
+		c.setFont(font.Mincho, skMetaPt)
+		cv.flow(skHistL2, skMetaH, desc)
+	}
+	cv.y += 2.5
+}
+
+// metaLine draws a gray "Tech: …" caption and its value, sharing the cursor and
+// pagination of the renderer.
+func (cv *cvRenderer) metaLine(x, lineH float64, label, value string) {
+	drawMetaLine(cv.c, x, lineH, label, ": ", value, &cv.y, cv.ensure)
 }
 
 func (cv *cvRenderer) education() {
