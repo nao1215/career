@@ -225,25 +225,30 @@ func (s *shokumuRenderer) markColor() rgb {
 	return black
 }
 
-// metaLine draws a gray caption label followed by its value as body text. Label
-// and value share the same Mincho face and baseline so the typeface never
-// changes mid-line; only the gray tone of the label sets it apart. The value
-// wraps with a hanging indent so continuation lines align under the first value
-// line rather than under the label.
+// metaLine draws a 役職 / 役割・規模 / 使用技術 caption and its value with a
+// full-width colon, sharing the cursor and pagination of the renderer.
 func (s *shokumuRenderer) metaLine(x, lineH float64, label, value string) {
-	c := s.c
+	drawMetaLine(s.c, x, lineH, label, "：", value, &s.y, s.ensure)
+}
+
+// drawMetaLine draws "label<sep>value": the label tinted gray, the value wrapped
+// with a hanging indent so continuation lines align under the value rather than
+// the label. Label and value share the Mincho face so the typeface never changes
+// mid-line. The cursor y is advanced in place and ensure is called before each
+// line, so the caller keeps control of pagination.
+func drawMetaLine(c *canvas, x, lineH float64, label, sep, value string, y *float64, ensure func(float64)) {
 	c.setFont(font.Mincho, skMetaPt)
-	prefix := label + "："
+	prefix := label + sep
 	valueX := x + c.textWidth(prefix)
 	for i, line := range c.wrap(strings.TrimRight(value, "\n"), skRight-valueX) {
-		s.ensure(lineH)
+		ensure(lineH)
 		if i == 0 {
 			c.setColor(metaLabel)
-			c.text(x, s.y, prefix)
+			c.text(x, *y, prefix)
 			c.setColor(black)
 		}
-		c.text(valueX, s.y, line)
-		s.y += lineH
+		c.text(valueX, *y, line)
+		*y += lineH
 	}
 }
 

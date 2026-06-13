@@ -23,6 +23,19 @@ demand.
 
 ![demo](./image/demo.gif)
 
+## What it produces
+
+One YAML source renders three documents. The previews below are generated from
+[`examples/resume.yaml`](./examples/resume.yaml); click one to open its sample PDF.
+
+| cv (English résumé) | work-history (職務経歴書) |
+| :---: | :---: |
+| [![cv](./image/cv-p-1.png)](./image/cv-sample.pdf) | [![work-history](./image/work-history-p-1.png)](./image/work-history-sample.pdf) |
+
+| japanese-resume (履歴書) — page 1 | page 2 |
+| :---: | :---: |
+| [![japanese-resume page 1](./image/japanese-resume-p-1.png)](./image/japanese-resume-sample.pdf) | ![japanese-resume page 2](./image/japanese-resume-p-2.png) |
+
 ## Example
 
 ```yaml
@@ -139,9 +152,7 @@ language is added by registering one more template.
 An English résumé: a name and contact header, then Summary, Skills, Experience,
 Education, Certifications, and Publications.
 
-![cv](./image/cv-p-1.png)
-
-Sample: [`image/cv-sample.pdf`](./image/cv-sample.pdf)
+Sample: [`image/cv-sample.pdf`](./image/cv-sample.pdf) (preview above).
 
 ### japanese-resume (履歴書)
 
@@ -149,22 +160,14 @@ The JIS-style 履歴書 on A4: photo frame, personal block, and the 学歴・職
 免許・資格 tables. Long histories flow onto additional pages. This template always
 renders in black, matching the convention for the form. Aliases: `履歴書`.
 
-| Page 1 | Page 2 |
-| :---: | :---: |
-| ![japanese-resume page 1](./image/japanese-resume-p-1.png) | ![japanese-resume page 2](./image/japanese-resume-p-2.png) |
-
-Sample: [`image/japanese-resume-sample.pdf`](./image/japanese-resume-sample.pdf)
+Sample: [`image/japanese-resume-sample.pdf`](./image/japanese-resume-sample.pdf) (preview above).
 
 ### work-history (職務経歴書)
 
 The Japanese 職務経歴書: 職務要約, skills, per-company project history, 資格, 出版,
 and 自己PR, with automatic page breaks. Aliases: `職務経歴書`.
 
-![work-history](./image/work-history-p-1.png)
-
-Sample: [`image/work-history-sample.pdf`](./image/work-history-sample.pdf)
-
-All previews are rendered from [`examples/resume.yaml`](./examples/resume.yaml).
+Sample: [`image/work-history-sample.pdf`](./image/work-history-sample.pdf) (preview above).
 
 ## Photo (履歴書)
 
