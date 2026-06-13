@@ -1,0 +1,11 @@
+# Keep line endings LF on every platform so shell specs and fixtures match
+# byte-for-byte (avoids CRLF drift on Windows checkouts).
+* text=auto eol=lf
+
+# Binary assets must never be line-ending normalized.
+*.ttf binary
+*.ttc binary
+*.otf binary
+*.png binary
+*.jpg binary
+*.pdf binary

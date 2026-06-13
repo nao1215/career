@@ -30,3 +30,15 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# local build output
+/career
+.gocache/
+
+# generated PDFs (examples are rendered on demand, not committed)
+*.pdf
+# ...except the sample PDFs shown in the README.
+!image/*-sample.pdf
+
+# local docs working area (reference clones, design notes)
+doc/

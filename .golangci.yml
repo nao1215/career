@@ -1,0 +1,62 @@
+version: "2"
+run:
+  go: "1.25"
+linters:
+  enable:
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - copyloopvar
+    - dogsled
+    - durationcheck
+    - errcheck
+    - errorlint
+    - gocheckcompilerdirectives
+    - gocritic
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - noctx
+    - nolintlint
+    - paralleltest
+    - staticcheck
+    - thelper
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+  settings:
+    gosec:
+      excludes:
+        # G703 (path traversal via taint analysis) flags reads of and writes to
+        # the user-supplied input/output paths, which is the intended behavior of
+        # this CLI. The rule is also unstable across Go toolchain versions, so
+        # exclude it project-wide.
+        - G703
+  exclusions:
+    generated: lax
+    rules:
+      - linters:
+          - goconst
+        path: .*_test\.go
+      - linters:
+          - errcheck
+        source: defer
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
