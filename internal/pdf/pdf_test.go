@@ -7,45 +7,46 @@ import (
 	"github.com/nao1215/career/internal/resume"
 )
 
-// sampleResume returns a small but complete document covering both outputs.
+// sampleResume returns a small but complete document covering every output.
 func sampleResume() *resume.Resume {
+	p := resume.Plain
 	return &resume.Resume{
-		Date: "2026年6月13日現在",
+		Date: p("2026年6月13日現在"),
 		Profile: resume.Profile{
-			Name:      "履歴書 太郎",
+			Name:      p("履歴書 太郎"),
 			NameKana:  "りれきしょ たろう",
 			BirthDate: "1990年1月1日",
 			Gender:    "男",
 			Email:     "taro@example.com",
 			Phone:     "090-0000-0000",
-			Address:   resume.Address{Zip: "100-0001", Text: "東京都千代田区千代田1-1-1"},
+			Address:   resume.Address{Zip: "100-0001", Text: p("東京都千代田区千代田1-1-1")},
 		},
 		Education: []resume.HistoryItem{
-			{Year: "2009", Month: "4", Value: "見本大学 入学"},
-			{Year: "2013", Month: "3", Value: "見本大学 卒業"},
+			{Year: "2009", Month: "4", Value: p("見本大学 入学")},
+			{Year: "2013", Month: "3", Value: p("見本大学 卒業")},
 		},
 		Work: []resume.HistoryItem{
-			{Year: "2015", Month: "4", Value: "株式会社A 入社"},
+			{Year: "2015", Month: "4", Value: p("株式会社A 入社")},
 		},
 		Licenses: []resume.HistoryItem{
-			{Year: "2010", Month: "4", Value: "普通自動車第一種運転免許"},
+			{Year: "2010", Month: "4", Value: p("普通自動車第一種運転免許")},
 		},
 		Rireki: resume.Rireki{Hobby: "読書", Motivation: "技術力を高めたいため"},
 		Career: resume.Career{
-			Summary: "バックエンドエンジニアとして従事。",
-			Skills:  []string{"Go", "AWS"},
+			Summary: p("バックエンドエンジニアとして従事。"),
+			Skills:  []resume.Text{p("Go"), p("AWS")},
 			Histories: []resume.CareerHistory{
 				{
-					Company: "株式会社A",
-					Period:  "2015年4月 - 現在",
+					Company: p("株式会社A"),
+					Period:  p("2015年4月 - 現在"),
 					Projects: []resume.Project{
-						{Title: "決済基盤", Description: "決済電文処理", Tech: []string{"Go", "AWS"}},
+						{Title: p("決済基盤"), Description: p("決済電文処理"), Tech: []string{"Go", "AWS"}},
 					},
 				},
 			},
-			Certifications: []string{"応用情報技術者試験"},
-			Publications:   []string{"Software Design 2024年12月号"},
-			SelfPR:         "継続的な学習を重視しています。",
+			Certifications: []resume.Text{p("応用情報技術者試験")},
+			Publications:   []resume.Text{p("Software Design 2024年12月号")},
+			SelfPR:         p("継続的な学習を重視しています。"),
 		},
 	}
 }
@@ -65,7 +66,7 @@ func assertPDF(t *testing.T, got []byte) {
 
 func TestRenderRirekisho(t *testing.T) {
 	t.Parallel()
-	got, err := RenderRirekisho(sampleResume())
+	got, err := RenderRirekisho(sampleResume(), options{lang: resume.LangJA})
 	if err != nil {
 		t.Fatalf("RenderRirekisho() error = %v", err)
 	}
@@ -100,9 +101,9 @@ func TestRenderCV(t *testing.T) {
 // the universally required name field.
 func TestRenderMinimal(t *testing.T) {
 	t.Parallel()
-	minimal := &resume.Resume{Profile: resume.Profile{Name: "最小 太郎"}}
+	minimal := &resume.Resume{Profile: resume.Profile{Name: resume.Plain("最小 太郎")}}
 
-	r, err := RenderRirekisho(minimal)
+	r, err := RenderRirekisho(minimal, options{lang: resume.LangJA})
 	if err != nil {
 		t.Fatalf("RenderRirekisho(minimal) error = %v", err)
 	}

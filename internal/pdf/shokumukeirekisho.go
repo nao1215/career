@@ -62,6 +62,9 @@ func (s *shokumuRenderer) ensure(space float64) {
 	}
 }
 
+// tr resolves a localized Text field in the renderer's language.
+func (s *shokumuRenderer) tr(t resume.Text) string { return t.For(s.opts.lang) }
+
 func (s *shokumuRenderer) header() {
 	c := s.c
 	c.setFont(font.Gothic, 18)
@@ -69,12 +72,11 @@ func (s *shokumuRenderer) header() {
 	s.y = skTop + 12
 
 	c.setFont(font.Mincho, 10)
-	if s.res.Date != "" {
-		c.textRight(skRight, s.y, s.res.Date)
+	if date := s.tr(s.res.Date); date != "" {
+		c.textRight(skRight, s.y, date)
 	}
 	s.y += 5
-	name := s.res.Profile.Name
-	if name != "" {
+	if name := s.tr(s.res.Profile.Name); name != "" {
 		c.textRight(skRight, s.y, "氏名　"+name)
 	}
 	s.y += 8
@@ -102,11 +104,12 @@ func (s *shokumuRenderer) heading(title string) {
 }
 
 func (s *shokumuRenderer) summarySection() {
-	if strings.TrimSpace(s.res.Career.Summary) == "" {
+	summary := s.tr(s.res.Career.Summary)
+	if strings.TrimSpace(summary) == "" {
 		return
 	}
 	s.heading("職務要約")
-	s.bodyText(s.res.Career.Summary)
+	s.bodyText(summary)
 	s.y += 4
 }
 
@@ -121,7 +124,7 @@ func (s *shokumuRenderer) skillsSection() {
 	for _, skill := range skills {
 		s.ensure(skLineH)
 		c.text(skLeft+1, s.y, "・")
-		s.flow(skLeft+5, skLineH, skill)
+		s.flow(skLeft+5, skLineH, s.tr(skill))
 	}
 	s.y += 4
 }
@@ -143,20 +146,20 @@ func (s *shokumuRenderer) companyBlock(h *resume.CareerHistory) {
 
 	// Company name and period on one line.
 	c.setFont(font.Gothic, 11.5)
-	c.text(skLeft, s.y, "■ "+h.Company)
-	if h.Period != "" {
+	c.text(skLeft, s.y, "■ "+s.tr(h.Company))
+	if period := s.tr(h.Period); period != "" {
 		c.setFont(font.Mincho, 9.5)
-		c.textRight(skRight, s.y+0.8, h.Period)
+		c.textRight(skRight, s.y+0.8, period)
 	}
 	s.y += 6
 
-	if h.Role != "" {
+	if role := s.tr(h.Role); role != "" {
 		c.setFont(font.Mincho, 9.5)
-		s.flow(skLeft+2, skLineH, "役職: "+h.Role)
+		s.flow(skLeft+2, skLineH, "役職: "+role)
 	}
-	if strings.TrimSpace(h.Summary) != "" {
+	if summary := s.tr(h.Summary); strings.TrimSpace(summary) != "" {
 		c.setFont(font.Mincho, 9.5)
-		s.flow(skLeft+2, 5, h.Summary)
+		s.flow(skLeft+2, 5, summary)
 	}
 	s.y += 1
 
@@ -171,18 +174,18 @@ func (s *shokumuRenderer) projectBlock(p *resume.Project) {
 	s.ensure(skLineH * 2)
 
 	c.setFont(font.Gothic, 10)
-	header := "▸ " + p.Title
-	if p.Period != "" {
-		header += "（" + p.Period + "）"
+	header := "▸ " + s.tr(p.Title)
+	if period := s.tr(p.Period); period != "" {
+		header += "（" + period + "）"
 	}
 	s.flow(skLeft+3, skLineH, header)
 
 	c.setFont(font.Mincho, 9.5)
-	if p.Role != "" {
-		s.flow(skLeft+6, 5, "役割・規模: "+p.Role)
+	if role := s.tr(p.Role); role != "" {
+		s.flow(skLeft+6, 5, "役割・規模: "+role)
 	}
-	if strings.TrimSpace(p.Description) != "" {
-		s.flow(skLeft+6, 5, p.Description)
+	if desc := s.tr(p.Description); strings.TrimSpace(desc) != "" {
+		s.flow(skLeft+6, 5, desc)
 	}
 	if len(p.Tech) > 0 {
 		s.flow(skLeft+6, 5, "使用技術: "+strings.Join(p.Tech, ", "))
@@ -190,7 +193,7 @@ func (s *shokumuRenderer) projectBlock(p *resume.Project) {
 	s.y += 1.5
 }
 
-func (s *shokumuRenderer) listSection(title string, items []string) {
+func (s *shokumuRenderer) listSection(title string, items []resume.Text) {
 	if len(items) == 0 {
 		return
 	}
@@ -200,17 +203,18 @@ func (s *shokumuRenderer) listSection(title string, items []string) {
 	for _, item := range items {
 		s.ensure(skLineH)
 		c.text(skLeft+1, s.y, "・")
-		s.flow(skLeft+5, skLineH, item)
+		s.flow(skLeft+5, skLineH, s.tr(item))
 	}
 	s.y += 4
 }
 
 func (s *shokumuRenderer) prSection() {
-	if strings.TrimSpace(s.res.Career.SelfPR) == "" {
+	pr := s.tr(s.res.Career.SelfPR)
+	if strings.TrimSpace(pr) == "" {
 		return
 	}
 	s.heading("自己PR")
-	s.bodyText(s.res.Career.SelfPR)
+	s.bodyText(pr)
 }
 
 // bodyText draws a wrapped paragraph at the body font from the left margin.

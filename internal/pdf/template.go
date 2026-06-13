@@ -6,10 +6,11 @@ import (
 	"github.com/nao1215/career/internal/resume"
 )
 
-// options carries resolved rendering settings shared by the colored templates.
+// options carries resolved rendering settings passed to a renderer.
 type options struct {
 	accent   rgb
 	accentOn bool
+	lang     string // language code the renderer should request from Text fields
 }
 
 // Template describes one renderable document kind together with the validation
@@ -24,6 +25,7 @@ type Template struct {
 	// DefaultOutput is the file name used when the user does not pass --output.
 	DefaultOutput string
 
+	lang     string // language requested from localized Text fields
 	render   func(*resume.Resume, options) ([]byte, error)
 	validate func(*resume.Resume) error
 }
@@ -37,6 +39,7 @@ var templates = []Template{
 		Aliases:       nil,
 		Description:   "English curriculum vitae / résumé",
 		DefaultOutput: "cv.pdf",
+		lang:          resume.LangEN,
 		render:        RenderCV,
 		validate:      (*resume.Resume).ValidateCareer,
 	},
@@ -45,7 +48,8 @@ var templates = []Template{
 		Aliases:       []string{"履歴書"},
 		Description:   "JIS-style Japanese 履歴書 (A4, 2 pages)",
 		DefaultOutput: "japanese-resume.pdf",
-		render:        func(r *resume.Resume, _ options) ([]byte, error) { return RenderRirekisho(r) },
+		lang:          resume.LangJA,
+		render:        RenderRirekisho,
 		validate:      (*resume.Resume).ValidateRireki,
 	},
 	{
@@ -53,6 +57,7 @@ var templates = []Template{
 		Aliases:       []string{"職務経歴書"},
 		Description:   "Japanese 職務経歴書 (work history with projects)",
 		DefaultOutput: "career-history.pdf",
+		lang:          resume.LangJA,
 		render:        RenderShokumukeirekisho,
 		validate:      (*resume.Resume).ValidateCareer,
 	},
@@ -92,5 +97,5 @@ func (t Template) Render(res *resume.Resume, accentSetting string) ([]byte, erro
 	if err != nil {
 		return nil, err
 	}
-	return t.render(res, options{accent: color, accentOn: on})
+	return t.render(res, options{accent: color, accentOn: on, lang: t.lang})
 }

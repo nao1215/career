@@ -43,20 +43,20 @@ func Parse(r io.Reader) (*Resume, error) {
 // ValidateRireki checks that the document has the minimum data needed to render
 // a 履歴書.
 func (r *Resume) ValidateRireki() error {
-	if r.Profile.Name == "" {
+	if !r.Profile.Name.Has() {
 		return ErrEmptyName
 	}
 	return nil
 }
 
 // ValidateCareer checks that the document has the minimum data needed to render
-// a 職務経歴書.
+// a 職務経歴書 or a CV.
 func (r *Resume) ValidateCareer() error {
-	if r.Profile.Name == "" {
+	if !r.Profile.Name.Has() {
 		return ErrEmptyName
 	}
-	if r.Career.Summary == "" && len(r.Career.Histories) == 0 {
-		return errors.New("career.summary or career.histories is required for a 職務経歴書")
+	if !r.Career.Summary.Has() && len(r.Career.Histories) == 0 {
+		return errors.New("career.summary or career.histories is required for a 職務経歴書 or CV")
 	}
 	return nil
 }

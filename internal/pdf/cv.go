@@ -56,19 +56,22 @@ func (cv *cvRenderer) accentColor() rgb {
 	return black
 }
 
+// tr resolves a localized Text field in the renderer's language.
+func (cv *cvRenderer) tr(t resume.Text) string { return t.For(cv.opts.lang) }
+
 func (cv *cvRenderer) header() {
 	c := cv.c
 	p := cv.res.Profile
 
 	c.setFont(font.Gothic, 22)
 	c.setColor(cv.accentColor())
-	c.text(skLeft, skTop, p.Name)
+	c.text(skLeft, skTop, cv.tr(p.Name))
 	c.setColor(black)
 	cv.y = skTop + 10
 
 	// Contact line: email · phone · location.
 	var parts []string
-	for _, v := range []string{p.Email, p.Phone, p.Address.Text} {
+	for _, v := range []string{p.Email, p.Phone, cv.tr(p.Address.Text)} {
 		if strings.TrimSpace(v) != "" {
 			parts = append(parts, v)
 		}
@@ -96,9 +99,9 @@ func (cv *cvRenderer) heading(title string) {
 }
 
 func (cv *cvRenderer) summary() {
-	text := cv.res.Career.Summary
+	text := cv.tr(cv.res.Career.Summary)
 	if strings.TrimSpace(text) == "" {
-		text = cv.res.Career.SelfPR
+		text = cv.tr(cv.res.Career.SelfPR)
 	}
 	if strings.TrimSpace(text) == "" {
 		return
@@ -120,7 +123,7 @@ func (cv *cvRenderer) skills() {
 	for _, skill := range skills {
 		cv.ensure(skLineH)
 		c.text(skLeft+1, cv.y, "•")
-		cv.flow(skLeft+5, skLineH, skill)
+		cv.flow(skLeft+5, skLineH, cv.tr(skill))
 	}
 	cv.y += 4
 }
@@ -141,20 +144,20 @@ func (cv *cvRenderer) companyBlock(h *resume.CareerHistory) {
 	cv.ensure(skLineH * 3)
 
 	c.setFont(font.Gothic, 11.5)
-	c.text(skLeft, cv.y, h.Company)
-	if h.Period != "" {
+	c.text(skLeft, cv.y, cv.tr(h.Company))
+	if period := cv.tr(h.Period); period != "" {
 		c.setFont(font.Mincho, 9.5)
-		c.textRight(skRight, cv.y+0.8, h.Period)
+		c.textRight(skRight, cv.y+0.8, period)
 	}
 	cv.y += 6
 
-	if h.Role != "" {
+	if role := cv.tr(h.Role); role != "" {
 		c.setFont(font.Mincho, 9.5)
-		cv.flow(skLeft+2, skLineH, h.Role)
+		cv.flow(skLeft+2, skLineH, role)
 	}
-	if strings.TrimSpace(h.Summary) != "" {
+	if summary := cv.tr(h.Summary); strings.TrimSpace(summary) != "" {
 		c.setFont(font.Mincho, 9.5)
-		cv.flow(skLeft+2, 5, h.Summary)
+		cv.flow(skLeft+2, 5, summary)
 	}
 	cv.y += 1
 
@@ -169,18 +172,18 @@ func (cv *cvRenderer) projectBlock(p *resume.Project) {
 	cv.ensure(skLineH * 2)
 
 	c.setFont(font.Gothic, 10)
-	header := p.Title
-	if p.Period != "" {
-		header += " (" + p.Period + ")"
+	header := cv.tr(p.Title)
+	if period := cv.tr(p.Period); period != "" {
+		header += " (" + period + ")"
 	}
 	cv.flow(skLeft+3, skLineH, "• "+header)
 
 	c.setFont(font.Mincho, 9.5)
-	if p.Role != "" {
-		cv.flow(skLeft+6, 5, p.Role)
+	if role := cv.tr(p.Role); role != "" {
+		cv.flow(skLeft+6, 5, role)
 	}
-	if strings.TrimSpace(p.Description) != "" {
-		cv.flow(skLeft+6, 5, p.Description)
+	if desc := cv.tr(p.Description); strings.TrimSpace(desc) != "" {
+		cv.flow(skLeft+6, 5, desc)
 	}
 	if len(p.Tech) > 0 {
 		cv.flow(skLeft+6, 5, "Tech: "+strings.Join(p.Tech, ", "))
@@ -204,12 +207,12 @@ func (cv *cvRenderer) education() {
 			c.text(skLeft, cv.y+0.5, date)
 		}
 		c.setFont(font.Mincho, skBodyPt)
-		cv.flow(skLeft+22, skLineH, e.Value)
+		cv.flow(skLeft+22, skLineH, cv.tr(e.Value))
 	}
 	cv.y += 4
 }
 
-func (cv *cvRenderer) list(title string, items []string) {
+func (cv *cvRenderer) list(title string, items []resume.Text) {
 	if len(items) == 0 {
 		return
 	}
@@ -219,7 +222,7 @@ func (cv *cvRenderer) list(title string, items []string) {
 	for _, item := range items {
 		cv.ensure(skLineH)
 		c.text(skLeft+1, cv.y, "•")
-		cv.flow(skLeft+5, skLineH, item)
+		cv.flow(skLeft+5, skLineH, cv.tr(item))
 	}
 	cv.y += 4
 }

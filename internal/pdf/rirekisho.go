@@ -22,13 +22,13 @@ const (
 // RenderRirekisho renders a JIS-style 履歴書 to PDF bytes. The layout follows
 // the conventional two-page A4 format: page one carries the personal block and
 // the 学歴・職歴 table, page two the 免許・資格 table and the free-text fields.
-func RenderRirekisho(res *resume.Resume) ([]byte, error) {
+func RenderRirekisho(res *resume.Resume, opts options) ([]byte, error) {
 	c, err := newCanvas()
 	if err != nil {
 		return nil, err
 	}
 
-	rireki := &rirekishoRenderer{c: c, res: res}
+	rireki := &rirekishoRenderer{c: c, res: res, lang: opts.lang}
 	rireki.page1()
 	rireki.page2()
 
@@ -36,8 +36,9 @@ func RenderRirekisho(res *resume.Resume) ([]byte, error) {
 }
 
 type rirekishoRenderer struct {
-	c   *canvas
-	res *resume.Resume
+	c    *canvas
+	res  *resume.Resume
+	lang string
 }
 
 func (r *rirekishoRenderer) page1() {
@@ -47,9 +48,9 @@ func (r *rirekishoRenderer) page1() {
 	// Header: title on the left, "as of" date on the right of the text block.
 	c.setFont(font.Gothic, 16)
 	c.text(rkLeft, 11, "履　歴　書")
-	if r.res.Date != "" {
+	if date := r.res.Date.For(r.lang); date != "" {
 		c.setFont(font.Mincho, 9)
-		c.textRight(160, 14, r.res.Date)
+		c.textRight(160, 14, date)
 	}
 
 	r.personalBlock()
@@ -97,7 +98,7 @@ func (r *rirekishoRenderer) personalBlock() {
 	c.setFont(font.Mincho, labelPt)
 	c.text(labelX, yName+5, "氏　名")
 	c.setFont(font.Mincho, 18)
-	c.text(valueX, yName+4, p.Name)
+	c.text(valueX, yName+4, p.Name.For(r.lang))
 	c.line(left, yBirth, right, yBirth)
 
 	// 生年月日 / 性別
@@ -130,7 +131,7 @@ func (r *rirekishoRenderer) personalBlock() {
 		c.text(labelX, yAddr+7, "〒 "+p.Address.Zip)
 	}
 	c.setFont(font.Mincho, 11)
-	c.text(valueX, yAddr+8, p.Address.Text)
+	c.text(valueX, yAddr+8, p.Address.Text.For(r.lang))
 	c.line(left, yFuriganaContact, right, yFuriganaContact)
 
 	// ふりがな (contact)
@@ -142,7 +143,7 @@ func (r *rirekishoRenderer) personalBlock() {
 	// 連絡先
 	c.setFont(font.Mincho, labelPt)
 	c.text(labelX, yContact+2, "連絡先")
-	if p.Contact.Text == "" {
+	if !p.Contact.Text.Has() {
 		c.setFont(font.Mincho, smallPt)
 		c.text(labelX, yContact+7, "（現住所に同じ）")
 	} else {
@@ -150,7 +151,7 @@ func (r *rirekishoRenderer) personalBlock() {
 			c.text(labelX, yContact+7, "〒 "+p.Contact.Zip)
 		}
 		c.setFont(font.Mincho, 11)
-		c.text(valueX, yContact+8, p.Contact.Text)
+		c.text(valueX, yContact+8, p.Contact.Text.For(r.lang))
 	}
 	c.line(left, yPhoneRow, right, yPhoneRow)
 
@@ -215,14 +216,14 @@ func (r *rirekishoRenderer) buildHistoryRows() []historyRow {
 	if len(r.res.Education) > 0 {
 		rows = append(rows, historyRow{value: "学歴", center: true})
 		for _, e := range r.res.Education {
-			rows = append(rows, historyRow{year: e.Year.String(), month: e.Month.String(), value: e.Value})
+			rows = append(rows, historyRow{year: e.Year.String(), month: e.Month.String(), value: e.Value.For(r.lang)})
 		}
 		rows = append(rows, historyRow{})
 	}
 	if len(r.res.Work) > 0 {
 		rows = append(rows, historyRow{value: "職歴", center: true})
 		for _, w := range r.res.Work {
-			rows = append(rows, historyRow{year: w.Year.String(), month: w.Month.String(), value: w.Value})
+			rows = append(rows, historyRow{year: w.Year.String(), month: w.Month.String(), value: w.Value.For(r.lang)})
 		}
 	}
 	rows = append(rows, historyRow{value: "以上", righted: true})
@@ -281,7 +282,7 @@ func (r *rirekishoRenderer) page2() {
 	licTop := 14.0
 	licRows := make([]historyRow, 0, len(r.res.Licenses)+1)
 	for _, l := range r.res.Licenses {
-		licRows = append(licRows, historyRow{year: l.Year.String(), month: l.Month.String(), value: l.Value})
+		licRows = append(licRows, historyRow{year: l.Year.String(), month: l.Month.String(), value: l.Value.For(r.lang)})
 	}
 	licRows = append(licRows, historyRow{value: "以上", righted: true})
 	licBottom := licTop + rkRowH*float64(maxInt(len(licRows)+1, 8))

@@ -42,3 +42,7 @@ go.work.sum
 
 # local docs working area (reference clones, design notes)
 doc/
+
+# a resume.yaml written by "career init" at the repo root holds personal data;
+# the tracked sample lives at examples/resume.yaml.
+/resume.yaml

@@ -74,6 +74,8 @@ func (a *App) Run(args []string) int {
 		}
 		a.printRootHelp(a.stdout)
 		return 0
+	case "init":
+		return a.runInit(args[1:])
 	case "generate", "gen":
 		return a.runGenerate(args[1:])
 	case "templates":
@@ -102,7 +104,7 @@ func (a *App) runHelp(args []string) int {
 	rest := args[1:]
 
 	switch name {
-	case "generate", "gen", "templates":
+	case "init", "generate", "gen", "templates":
 		forwarded := make([]string, 0, len(args)+1)
 		forwarded = append(forwarded, args...)
 		forwarded = append(forwarded, "--help")
@@ -237,12 +239,14 @@ func (a *App) printRootHelp(w io.Writer) {
 	writeLine(w, "  career <command> [arguments] [flags]")
 	writeLine(w, "")
 	writeLine(w, "Commands:")
+	writeLine(w, "  init        Write a starter resume YAML file")
 	writeLine(w, "  generate    Render a resume YAML file into a PDF")
 	writeLine(w, "  templates   List the available document templates")
 	writeLine(w, "  version     Print the version")
 	writeLine(w, "  help        Show command help")
 	writeLine(w, "")
 	writeLine(w, "Example:")
+	writeLine(w, "  career init")
 	writeLine(w, "  career generate resume.yaml --template cv --output cv.pdf")
 }
 

@@ -1,0 +1,70 @@
+# career resume file. Fill in your details, then run:
+#
+#   career generate resume.yaml --template cv               --output cv.pdf
+#   career generate resume.yaml --template japanese-resume  --output rirekisho.pdf
+#   career generate resume.yaml --template career-history   --output shokureki.pdf
+#
+# Text fields accept either a plain scalar (used for every language) or a
+# { ja:, en: } map. The cv template reads "en", the Japanese templates read
+# "ja", and either falls back to whatever is present. See examples/resume.yaml
+# in the repository for a fully populated bilingual sample.
+
+date: 2026年1月1日現在
+
+# Accent color for cv / career-history. "" = default, "none" = monochrome.
+theme:
+  accent: ""
+
+profile:
+  name:
+    ja: 山田 太郎
+    en: Taro Yamada
+  name_kana: やまだ たろう
+  birth_date: 1995年4月1日
+  gender: 男
+  email: taro@example.com
+  phone: "090-0000-0000"
+  photo: ""
+  address:
+    zip: 100-0001
+    text:
+      ja: 東京都千代田区千代田1-1-1
+      en: Tokyo, Japan
+
+education:
+  - year: 2014
+    month: 4
+    value: { ja: 〇〇大学 入学, en: "Entered Example University" }
+  - year: 2018
+    month: 3
+    value: { ja: 〇〇大学 卒業, en: "Graduated, Example University" }
+
+work:
+  - { year: 2018, month: 4, value: 〇〇株式会社 入社 }
+  - { value: 現在に至る }
+
+licenses:
+  - { year: 2016, month: 8, value: 普通自動車第一種運転免許 取得 }
+
+rireki:
+  hobby: 読書
+  motivation: 貴社の事業に貢献したいと考え、志望しました。
+  request: 貴社規定に従います。
+
+career:
+  summary:
+    ja: 〇〇の開発に従事してきたソフトウェアエンジニアです。
+    en: Software engineer experienced in building 〇〇.
+  skills:
+    - { ja: 〇〇による開発, en: Development with 〇〇 }
+  histories:
+    - company: { ja: 〇〇株式会社, en: Example Inc. }
+      period: { ja: 2018年4月 - 現在, en: Apr 2018 - Present }
+      role: { ja: ソフトウェアエンジニア, en: Software Engineer }
+      projects:
+        - title: { ja: 〇〇サービスの開発, en: 〇〇 service development }
+          description: { ja: 〇〇を設計・実装しました。, en: Designed and implemented 〇〇. }
+          tech: [〇〇]
+  self_pr:
+    ja: 〇〇を強みとし、貢献できます。
+    en: My strength is 〇〇, and I can contribute with it.

@@ -56,7 +56,7 @@ career:
 		t.Fatalf("Parse() error = %v", err)
 	}
 
-	if got, want := res.Profile.Name, "履歴書 太郎"; got != want {
+	if got, want := res.Profile.Name.For(LangJA), "履歴書 太郎"; got != want {
 		t.Errorf("Name = %q, want %q", got, want)
 	}
 	if got, want := len(res.Education), 2; got != want {
@@ -74,6 +74,33 @@ career:
 	}
 	if got, want := res.Career.Histories[0].Projects[0].Tech[0], "Go"; got != want {
 		t.Errorf("tech[0] = %q, want %q", got, want)
+	}
+}
+
+func TestTextLocalization(t *testing.T) {
+	t.Parallel()
+
+	const doc = `
+profile:
+  name:
+    ja: 見本 太郎
+    en: Taro Mihon
+career:
+  summary: shared summary
+`
+	res, err := Parse(strings.NewReader(doc))
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	if got := res.Profile.Name.For(LangJA); got != "見本 太郎" {
+		t.Errorf("Name.For(ja) = %q", got)
+	}
+	if got := res.Profile.Name.For(LangEN); got != "Taro Mihon" {
+		t.Errorf("Name.For(en) = %q", got)
+	}
+	// A scalar applies to every language.
+	if got := res.Career.Summary.For(LangEN); got != "shared summary" {
+		t.Errorf("Summary.For(en) = %q, want fallback to the scalar value", got)
 	}
 }
 
@@ -113,7 +140,7 @@ func TestValidateRireki(t *testing.T) {
 		},
 		{
 			name: "ok",
-			res:  Resume{Profile: Profile{Name: "x"}},
+			res:  Resume{Profile: Profile{Name: Plain("x")}},
 		},
 	}
 	for _, tt := range tests {
@@ -140,21 +167,21 @@ func TestValidateCareer(t *testing.T) {
 	}{
 		{
 			name:    "missing name",
-			res:     Resume{Career: Career{Summary: "x"}},
+			res:     Resume{Career: Career{Summary: Plain("x")}},
 			wantErr: true,
 		},
 		{
 			name:    "no content",
-			res:     Resume{Profile: Profile{Name: "x"}},
+			res:     Resume{Profile: Profile{Name: Plain("x")}},
 			wantErr: true,
 		},
 		{
 			name: "summary only",
-			res:  Resume{Profile: Profile{Name: "x"}, Career: Career{Summary: "x"}},
+			res:  Resume{Profile: Profile{Name: Plain("x")}, Career: Career{Summary: Plain("x")}},
 		},
 		{
 			name: "history only",
-			res:  Resume{Profile: Profile{Name: "x"}, Career: Career{Histories: []CareerHistory{{Company: "A"}}}},
+			res:  Resume{Profile: Profile{Name: Plain("x")}, Career: Career{Histories: []CareerHistory{{Company: Plain("A")}}}},
 		},
 	}
 	for _, tt := range tests {
@@ -183,8 +210,8 @@ func TestLoad(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Load() error = %v", err)
 	}
-	if res.Profile.Name != "ロード太郎" {
-		t.Errorf("Name = %q", res.Profile.Name)
+	if got := res.Profile.Name.For(""); got != "ロード太郎" {
+		t.Errorf("Name = %q", got)
 	}
 
 	if _, err := Load(filepath.Join(dir, "missing.yaml")); err == nil {
