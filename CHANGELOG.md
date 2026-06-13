@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--accent` flag and a `theme.accent` YAML field to set the accent color of the
   `cv` and `career-history` templates (`none` for monochrome). `japanese-resume`
   always renders in black.
+- `generate` renders the `cv` template by default and can render several
+  documents at once: repeat `--template`, comma-separate names, or pass `all`.
 - `init` command that writes a starter resume YAML file (`--force` to overwrite).
 - Multilingual text fields: any text value may be a plain scalar or a
   `{ ja:, en: }` map, so a single file renders the English CV and the Japanese

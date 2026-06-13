@@ -63,6 +63,18 @@ career generate resume.yaml -t japanese-resume  -o rirekisho.pdf
 career generate resume.yaml -t career-history   -o shokureki.pdf
 ```
 
+Without `--template`, `generate` renders the `cv` template. Render several at
+once by repeating `--template`, comma-separating names, or passing `all`; each
+document is written to its default file name (so `--output`, which names a single
+file, is only valid with one template).
+
+```bash
+career generate resume.yaml                       # cv.pdf (default)
+career generate resume.yaml -t all                # cv.pdf, japanese-resume.pdf, career-history.pdf
+career generate resume.yaml -t cv -t career-history
+career generate resume.yaml -t cv,japanese-resume
+```
+
 ## One file, multiple documents
 
 Each template reads the sections it needs from the same YAML:

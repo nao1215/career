@@ -45,6 +45,20 @@ Describe 'career generate'
     End
   End
 
+  Describe 'multiple templates'
+    It 'renders every template with -t all'
+      # Run inside WORK so the default output files land there, not in the repo.
+      When run sh -c "cd '$WORK' && '$CAREER_BIN' generate resume.yaml -t all"
+      The status should be success
+      The output should include 'cv'
+      The output should include 'japanese-resume'
+      The output should include 'career-history'
+      The path "$WORK/cv.pdf" should be exist
+      The path "$WORK/japanese-resume.pdf" should be exist
+      The path "$WORK/career-history.pdf" should be exist
+    End
+  End
+
   Describe 'errors'
     It 'fails when the input file is missing'
       When run career generate "$WORK/nope.yaml" -t cv -o "$WORK/out.pdf"

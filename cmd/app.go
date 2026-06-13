@@ -126,17 +126,18 @@ func (a *App) runHelp(args []string) int {
 
 func (a *App) runGenerate(args []string) int {
 	flagSet := newFlagSet("generate", a.stderr)
-	templateName := flagSet.String("template", "cv", "document template: cv, japanese-resume, or career-history")
-	flagSet.StringVar(templateName, "t", "cv", "shorthand for --template")
+	var templateFlags multiFlag
+	flagSet.Var(&templateFlags, "template", "document template: cv, japanese-resume, career-history, or all (repeatable, comma-separated)")
+	flagSet.Var(&templateFlags, "t", "shorthand for --template")
 	input := flagSet.String("input", "", "path to the resume YAML file (defaults to the first argument)")
 	flagSet.StringVar(input, "i", "", "shorthand for --input")
-	output := flagSet.String("output", "", "output PDF path (defaults to the template's name)")
+	output := flagSet.String("output", "", "output PDF path (only valid with a single template; defaults to the template's name)")
 	flagSet.StringVar(output, "o", "", "shorthand for --output")
 	accentFlag := flagSet.String("accent", "", "accent color for cv/career-history: #rrggbb or \"none\" (overrides theme.accent)")
 	flagSet.Usage = func() {
-		writeLine(flagSet.Output(), "Render a resume YAML file into a CV, 履歴書, or 職務経歴書 PDF.")
-		writeLine(flagSet.Output(), "Usage: career generate [INPUT] --template NAME [--input PATH] [--output PATH] [--accent COLOR]")
-		writeLine(flagSet.Output(), "The input file may be given as the first argument or via --input.")
+		writeLine(flagSet.Output(), "Render a resume YAML file into one or more CV / 履歴書 / 職務経歴書 PDFs.")
+		writeLine(flagSet.Output(), "Usage: career generate [INPUT] [--template NAME ...] [--input PATH] [--output PATH] [--accent COLOR]")
+		writeLine(flagSet.Output(), "Defaults to the cv template. Use --template all, or repeat/comma-separate names, for several at once.")
 		writeLine(flagSet.Output(), "Run \"career templates\" to list the available templates.")
 		printFlagDefaults(flagSet.Output(), flagSet)
 	}
@@ -144,10 +145,14 @@ func (a *App) runGenerate(args []string) int {
 		return code
 	}
 
-	tmpl, ok := pdf.Lookup(*templateName)
-	if !ok {
-		writef(a.stderr, "unknown template: %s\n", *templateName)
+	tmpls, err := resolveTemplates(templateFlags)
+	if err != nil {
+		writeLine(a.stderr, err)
 		writeLine(a.stderr, "run \"career templates\" to list the available templates")
+		return 1
+	}
+	if len(tmpls) > 1 && *output != "" {
+		writeLine(a.stderr, "--output cannot be used with multiple templates; it names a single file")
 		return 1
 	}
 
@@ -165,11 +170,6 @@ func (a *App) runGenerate(args []string) int {
 		return 1
 	}
 
-	outputPath := *output
-	if outputPath == "" {
-		outputPath = tmpl.DefaultOutput
-	}
-
 	res, err := resume.Load(a.resolvePath(inputPath))
 	if err != nil {
 		writeLine(a.stderr, err)
@@ -182,19 +182,64 @@ func (a *App) runGenerate(args []string) int {
 		accentSetting = *accentFlag
 	}
 
-	data, err := tmpl.Render(res, accentSetting)
-	if err != nil {
-		writeLine(a.stderr, err)
-		return 1
+	for _, tmpl := range tmpls {
+		outputPath := *output
+		if outputPath == "" {
+			outputPath = tmpl.DefaultOutput
+		}
+		data, err := tmpl.Render(res, accentSetting)
+		if err != nil {
+			writeLine(a.stderr, err)
+			return 1
+		}
+		if err := os.WriteFile(a.resolvePath(outputPath), data, 0o600); err != nil {
+			writef(a.stderr, "write %s: %v\n", outputPath, err)
+			return 1
+		}
+		writef(a.stdout, "wrote %s (%s, %d bytes)\n", outputPath, tmpl.Name, len(data))
+	}
+	return 0
+}
+
+// resolveTemplates turns the --template flag values into the templates to
+// render. No values means the default cv template; "all" expands to every
+// template; otherwise each name (comma-separated values are split) is looked up.
+// Duplicates are removed while preserving order.
+func resolveTemplates(flags multiFlag) ([]pdf.Template, error) {
+	var names []string
+	for _, f := range flags {
+		for _, n := range strings.Split(f, ",") {
+			if n = strings.TrimSpace(n); n != "" {
+				names = append(names, n)
+			}
+		}
+	}
+	if len(names) == 0 {
+		names = []string{"cv"}
 	}
 
-	dest := a.resolvePath(outputPath)
-	if err := os.WriteFile(dest, data, 0o600); err != nil {
-		writef(a.stderr, "write %s: %v\n", outputPath, err)
-		return 1
+	var out []pdf.Template
+	seen := map[string]bool{}
+	for _, name := range names {
+		if name == "all" {
+			for _, t := range pdf.Templates() {
+				if !seen[t.Name] {
+					seen[t.Name] = true
+					out = append(out, t)
+				}
+			}
+			continue
+		}
+		t, ok := pdf.Lookup(name)
+		if !ok {
+			return nil, fmt.Errorf("unknown template: %s", name)
+		}
+		if !seen[t.Name] {
+			seen[t.Name] = true
+			out = append(out, t)
+		}
 	}
-	writef(a.stdout, "wrote %s (%s, %d bytes)\n", outputPath, tmpl.Name, len(data))
-	return 0
+	return out, nil
 }
 
 func (a *App) runTemplates(args []string) int {
@@ -255,6 +300,16 @@ func (a *App) printRootHelp(w io.Writer) {
 type boolFlag interface {
 	flag.Value
 	IsBoolFlag() bool
+}
+
+// multiFlag is a string flag that may be repeated; each occurrence appends.
+type multiFlag []string
+
+func (m *multiFlag) String() string { return strings.Join(*m, ",") }
+
+func (m *multiFlag) Set(v string) error {
+	*m = append(*m, v)
+	return nil
 }
 
 func newFlagSet(name string, stderr io.Writer) *flag.FlagSet {

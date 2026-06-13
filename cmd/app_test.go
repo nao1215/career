@@ -131,6 +131,54 @@ func TestGenerateCV(t *testing.T) {
 	assertPDFFile(t, filepath.Join(dir, "cv.pdf"))
 }
 
+func TestGenerateAll(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+
+	app, stdout, stderr := newTestApp(dir)
+	if code := app.Run([]string{"generate", "resume.yaml", "-t", "all"}); code != 0 {
+		t.Fatalf("generate -t all exit = %d (stderr=%q)", code, stderr.String())
+	}
+	for _, name := range []string{"cv.pdf", "japanese-resume.pdf", "career-history.pdf"} {
+		assertPDFFile(t, filepath.Join(dir, name))
+	}
+	if n := strings.Count(stdout.String(), "wrote "); n != 3 {
+		t.Errorf("wrote count = %d, want 3 (%q)", n, stdout.String())
+	}
+}
+
+func TestGenerateMultiple(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+
+	app, _, stderr := newTestApp(dir)
+	// Repeated and comma-separated values combine; duplicates collapse.
+	if code := app.Run([]string{"generate", "resume.yaml", "-t", "cv,career-history", "-t", "cv"}); code != 0 {
+		t.Fatalf("generate exit = %d (stderr=%q)", code, stderr.String())
+	}
+	assertPDFFile(t, filepath.Join(dir, "cv.pdf"))
+	assertPDFFile(t, filepath.Join(dir, "career-history.pdf"))
+	if _, err := os.Stat(filepath.Join(dir, "japanese-resume.pdf")); err == nil {
+		t.Error("japanese-resume.pdf was generated but not requested")
+	}
+}
+
+func TestGenerateOutputWithMultipleFails(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	writeSample(t, dir)
+
+	app, _, stderr := newTestApp(dir)
+	if code := app.Run([]string{"generate", "resume.yaml", "-t", "all", "-o", "x.pdf"}); code != 1 {
+		t.Fatalf("exit = %d, want 1", code)
+	}
+	if !strings.Contains(stderr.String(), "--output cannot be used with multiple") {
+		t.Errorf("stderr = %q", stderr.String())
+	}
+}
+
 func TestGenerateInvalidAccent(t *testing.T) {
 	t.Parallel()
 	dir := t.TempDir()
