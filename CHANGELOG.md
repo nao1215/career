@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The end-to-end suite is now driven by [atago](https://github.com/nao1215/atago)
+  (`e2e/atago/*.atago.yaml` + `e2e/run.sh`, `make e2e`) instead of shellspec;
+  the specs cover the same CLI surface (`spec/` and `.shellspec` are removed).
+
 ## [v0.2.3] - 2026-06-13
 
 ### Added
