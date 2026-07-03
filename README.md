@@ -222,10 +222,10 @@ career generate resume.yaml -t cv --accent none   # monochrome
 ## Development
 
 ```bash
-make tools     # install golangci-lint, octocov, shellspec
+make tools     # install golangci-lint, octocov, atago
 make test      # unit tests with coverage
 make lint      # golangci-lint
-make test-e2e  # shellspec end-to-end tests against the built binary
+make e2e       # atago end-to-end tests against a freshly built binary
 make build     # build ./career
 make demo      # regenerate image/demo.gif (needs vhs)
 ```
