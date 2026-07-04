@@ -29,8 +29,18 @@ cleanup() { rm -rf "$TMP"; }
 trap cleanup EXIT
 mkdir -p "$TMP/bin"
 
+# COVER=1 (used only by `make coverage`) builds a coverage-instrumented career
+# so the E2E run's covdata can be merged with unit coverage. The child career
+# processes inherit GOCOVERDIR from the environment (atago passes env through,
+# and no spec uses clear_env), so each writes raw covdata on exit. The default
+# path (COVER unset) is a plain build and stays byte-for-byte identical.
 echo "e2e: building career..."
-(cd "$REPO_ROOT" && env CGO_ENABLED=0 go build -o "$TMP/bin/career" .)
+if [ -n "${COVER:-}" ]; then
+	: "${GOCOVERDIR:?COVER=1 requires GOCOVERDIR to be set}"
+	(cd "$REPO_ROOT" && env CGO_ENABLED=0 go build -cover -covermode=atomic -coverpkg=./... -o "$TMP/bin/career" .)
+else
+	(cd "$REPO_ROOT" && env CGO_ENABLED=0 go build -o "$TMP/bin/career" .)
+fi
 
 # Put the e2e-built career first on PATH so the specs exercise that binary.
 export PATH="$TMP/bin:$PATH"
