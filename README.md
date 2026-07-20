@@ -5,6 +5,7 @@
 [![E2E](https://github.com/nao1215/career/actions/workflows/e2e_test.yml/badge.svg)](https://github.com/nao1215/career/actions/workflows/e2e_test.yml)
 [![reviewdog](https://github.com/nao1215/career/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/nao1215/career/actions/workflows/reviewdog.yml)
 ![Coverage](https://raw.githubusercontent.com/nao1215/octocovs-central-repo/main/badges/nao1215/career/coverage.svg)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/nao1215/career/total)](https://github.com/nao1215/career/releases)
 
 career is a command-line tool that renders résumé PDFs from one YAML file.
 
