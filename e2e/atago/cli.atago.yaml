@@ -1,7 +1,7 @@
 # Migrated from career's ShellSpec spec/cli_spec.sh.
 # CLI surface: root help, version, template listing (and the Japanese aliases),
 # subcommand help, and the unknown-command error. Run with:
-#   make e2e   (or e2e/run.sh)
+#   make e2e   (or go run ./e2e/runner)
 version: "1"
 
 suite:

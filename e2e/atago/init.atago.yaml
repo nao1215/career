@@ -2,7 +2,7 @@
 # `career init` scaffolds a starter resume YAML: writes it, refuses to clobber
 # without --force, overwrites with --force, and the scaffold must be a file that
 # `career generate` accepts. Run with:
-#   make e2e   (or e2e/run.sh)
+#   make e2e   (or go run ./e2e/runner)
 #
 # ShellSpec mapping:
 #   * BeforeEach 'setup' (mktemp -d) -> atago's per-scenario temp workdir; the

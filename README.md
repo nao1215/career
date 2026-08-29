@@ -63,11 +63,51 @@ career generate resume.yaml -t work-history     -o shokumukeirekisho.pdf
 
 ## Install
 
+career is distributed through `go install`, its own Scoop bucket, and the
+packages and archives on the release page.
+
+### Use "go install"
+
 ```bash
 go install github.com/nao1215/career@latest
 ```
 
-Or build from source:
+Building from source needs Go 1.22 or newer.
+
+### Use Scoop (Windows)
+
+[Scoop](https://scoop.sh/) installs career from this repository's own bucket:
+
+```shell
+scoop bucket add nao1215 https://github.com/nao1215/career
+scoop install nao1215/career
+```
+
+The bucket manifest lives in [`bucket/`](./bucket) and is regenerated on every
+release, so the Windows archive URLs and their SHA-256 hashes always match the
+artifacts on the release page.
+
+### Install from a package or binary
+
+[The release page](https://github.com/nao1215/career/releases) has `.deb`,
+`.rpm`, and `.apk` packages for `amd64` and `arm64`, plus `.tar.gz` archives for
+Linux and macOS and `.zip` archives for Windows.
+
+```shell
+# Debian, Ubuntu
+sudo dpkg -i career_0.2.3_linux_amd64.deb
+
+# Fedora, RHEL, openSUSE
+sudo rpm -Uvh career_0.2.3_linux_amd64.rpm
+
+# Alpine Linux
+sudo apk add --allow-untrusted career_0.2.3_linux_amd64.apk
+```
+
+Replace `0.2.3` with the release you downloaded and `amd64` with `arm64` where
+applicable.
+
+### Build from source
 
 ```bash
 git clone https://github.com/nao1215/career.git
@@ -148,7 +188,7 @@ renders the Japanese 職務経歴書 from the same source.
 
 Long fields can be wrapped over several lines for readability — the renderer
 re-flows them to the page width, joining Japanese lines with no space and Latin
-words with a single space. A **blank line** starts a new paragraph and is kept as
+words with a single space. A blank line starts a new paragraph and is kept as
 a blank line of vertical space in the output. A line that begins with a bullet
 (`・`, `-`, `*`, `•`) is kept on its own line, so a field can mix prose with a
 list — handy for the 履歴書 hobby, motivation, and request boxes.

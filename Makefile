@@ -21,7 +21,7 @@ coverage: ## Combine unit + self-hosted E2E coverage into coverage.out / coverag
 	bash ./scripts/coverage.sh
 
 e2e: ## Run atago end-to-end tests against the freshly built binary
-	./e2e/run.sh
+	$(GO) run ./e2e/runner
 
 lint: ## Run golangci-lint
 	golangci-lint run --config .golangci.yml

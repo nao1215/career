@@ -1,12 +1,12 @@
 # Migrated from career's ShellSpec spec/readme_spec.sh.
 # Runs the representative commands shown in the README against the bundled
 # examples/resume.yaml so the documented examples cannot silently rot. Run with:
-#   make e2e   (or e2e/run.sh)
+#   make e2e   (or go run ./e2e/runner)
 #
 # ShellSpec mapping:
-#   * setup copies examples/resume.yaml to $WORK/resume.yaml -> a `cp
-#     "$CAREER_EXAMPLES/resume.yaml" resume.yaml` setup step (shell: true to
-#     expand the host env var).
+#   * setup copies examples/resume.yaml to $WORK/resume.yaml -> a `fixture` step,
+#     whose `from:` is resolved against this spec's directory. No shell, so the
+#     suite runs unchanged on Windows.
 #   * `sh -c "cd $WORK && career generate ..."` -> a plain run in the per-scenario
 #     workdir (no cd needed); relative output paths land in and are cleaned with it.
 version: "1"
@@ -17,9 +17,9 @@ suite:
 scenarios:
   - name: "cv example: career generate resume.yaml -t cv -o cv.pdf"
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/resume.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/resume.yaml
       - run:
           command: career generate resume.yaml -t cv -o cv.pdf
       - assert:
@@ -32,9 +32,9 @@ scenarios:
 
   - name: "japanese-resume example: -t japanese-resume -o rirekisho.pdf"
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/resume.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/resume.yaml
       - run:
           command: career generate resume.yaml -t japanese-resume -o rirekisho.pdf
       - assert:
@@ -47,9 +47,9 @@ scenarios:
 
   - name: "work-history example: -t work-history -o shokumukeirekisho.pdf"
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/resume.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/resume.yaml
       - run:
           command: career generate resume.yaml -t work-history -o shokumukeirekisho.pdf
       - assert:
@@ -62,9 +62,9 @@ scenarios:
 
   - name: "all example: -t all writes the three default file names"
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/resume.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/resume.yaml
       - run:
           command: career generate resume.yaml -t all
       - assert:

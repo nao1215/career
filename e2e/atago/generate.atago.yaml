@@ -2,20 +2,23 @@
 # `career generate` renders the cv / japanese-resume / work-history templates
 # (and their Japanese + legacy aliases) to PDF, supports --input/--output and
 # --photo, the -t all fan-out, and reports clear errors. Run with:
-#   make e2e   (or e2e/run.sh)
+#   make e2e   (or go run ./e2e/runner)
 #
 # ShellSpec mapping:
 #   * BeforeEach 'make_workdir' copies examples/minimal.yaml to $WORK/resume.yaml;
-#     here each scenario re-creates that with a `cp "$CAREER_EXAMPLES/minimal.yaml"
-#     resume.yaml` setup step (shell: true to expand the host env var). Output
-#     paths are relative so they land in the per-scenario workdir.
+#     here each scenario re-creates that with a `fixture` step, whose `from:` is
+#     resolved against this spec's directory. Output paths are relative so they
+#     land in the per-scenario workdir.
 #   * nested Describe (cv / japanese-resume / ...) flattened into the name.
-#   * `When call pdf_magic FILE` (head -c 4) -> a shell `head -c 4` run asserting
-#     stdout equals "%PDF".
+#   * `When call pdf_magic FILE` (head -c 4) -> the `pdf` assert, which proves
+#     the same thing (a parseable PDF) without reading bytes through a shell.
 #   * `sh -c "cd $WORK && career generate ... -t all"` -> a plain run in the
 #     workdir (no cd needed).
-#   * `--photo "$PROJECT_ROOT/image/..."` -> "$CAREER_EXAMPLES/../image/..." (the
-#     image dir is a sibling of examples/); needs shell: true to expand the var.
+#   * `--photo "$PROJECT_ROOT/image/..."` -> a `fixture` that copies the portrait
+#     into the workdir, so the command line carries a plain relative path.
+#
+# No step shells out or reads a host env var, which is what lets this suite run
+# unchanged on Windows.
 version: "1"
 
 suite:
@@ -24,9 +27,9 @@ suite:
 scenarios:
   - name: cv renders a PDF (default template) with an accent color
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml --accent "#2c6e6e" -o cv.pdf
       - assert:
@@ -39,19 +42,14 @@ scenarios:
 
   - name: cv writes a valid PDF header
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t cv -o cv.pdf
-      - run:
-          shell: true
-          command: head -c 4 cv.pdf
-      - assert:
-          stdout:
-            equals: "%PDF"
-      # PDF-specific black-box check: the generated CV is a real, non-empty PDF
-      # document with at least one page (#73), not merely a file that exists.
+      # The ShellSpec original read the first four bytes with `head -c 4`. The
+      # pdf assert is a stronger form of the same check and needs no shell, so
+      # the suite runs unchanged on Windows.
       - assert:
           pdf:
             path: cv.pdf
@@ -59,9 +57,9 @@ scenarios:
 
   - name: japanese-resume renders a PDF from a positional input
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t japanese-resume -o out.pdf
       - assert:
@@ -74,9 +72,9 @@ scenarios:
 
   - name: japanese-resume accepts the 履歴書 alias
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t 履歴書 -o out.pdf
       - assert:
@@ -89,12 +87,14 @@ scenarios:
 
   - name: japanese-resume embeds the bundled sample portrait passed with --photo
     steps:
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
+      - fixture:
+          file: face.jpg
+          from: ../../image/sample_japanese_man.jpg
       - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
-      - run:
-          shell: true
-          command: career generate resume.yaml -t japanese-resume --photo "$CAREER_EXAMPLES/../image/sample_japanese_man.jpg" -o out.pdf
+          command: career generate resume.yaml -t japanese-resume --photo face.jpg -o out.pdf
       - assert:
           exit_code: 0
           stdout:
@@ -105,9 +105,9 @@ scenarios:
 
   - name: work-history renders a PDF using --input and the default output name
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate --input resume.yaml --template work-history --output ch.pdf
       - assert:
@@ -120,9 +120,9 @@ scenarios:
 
   - name: work-history still accepts the legacy career-history alias
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t career-history -o legacy.pdf
       - assert:
@@ -135,9 +135,9 @@ scenarios:
 
   - name: work-history accepts the 職務経歴書 alias
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t 職務経歴書 -o ja.pdf
       - assert:
@@ -150,9 +150,9 @@ scenarios:
 
   - name: multiple templates renders every template with -t all
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t all
       - assert:
@@ -176,9 +176,9 @@ scenarios:
 
   - name: errors fails when the input file is missing
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate nope.yaml -t cv -o out.pdf
       - assert:
@@ -188,9 +188,9 @@ scenarios:
 
   - name: errors fails on an unknown template
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t bogus -o out.pdf
       - assert:
@@ -200,9 +200,9 @@ scenarios:
 
   - name: errors fails on an invalid accent color
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate resume.yaml -t cv --accent bogus -o out.pdf
       - assert:
@@ -212,9 +212,9 @@ scenarios:
 
   - name: errors fails when no input is given
     steps:
-      - run:
-          shell: true
-          command: cp "$CAREER_EXAMPLES/minimal.yaml" resume.yaml
+      - fixture:
+          file: resume.yaml
+          from: ../../examples/minimal.yaml
       - run:
           command: career generate -t cv
       - assert:
