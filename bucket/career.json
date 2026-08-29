@@ -1,0 +1,22 @@
+{
+    "version": "0.2.4",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/nao1215/career/releases/download/v0.2.4/career_0.2.4_windows_amd64.zip",
+            "bin": [
+                "career.exe"
+            ],
+            "hash": "33d2ba0c536edc815df0c59ec030ebebe92f85257543caab25f9f91307272a9d"
+        },
+        "arm64": {
+            "url": "https://github.com/nao1215/career/releases/download/v0.2.4/career_0.2.4_windows_arm64.zip",
+            "bin": [
+                "career.exe"
+            ],
+            "hash": "f4faa4ea7cd3ee70c5907e0df7ddbfdfadcb461bc57b89195135d84b87216b0d"
+        }
+    },
+    "homepage": "https://github.com/nao1215/career",
+    "license": "MIT",
+    "description": "Renders Japanese 履歴書 and 職務経歴書 and English CV PDFs from one YAML file"
+}
