@@ -1,5 +1,15 @@
 name: E2E
 
+# career's specs drive the real binary through atago. The suite used to run on
+# Linux and macOS only -- two POSIX platforms that behave alike -- which left
+# Windows, the one platform where career's path handling and the .exe suffix
+# actually differ, covered by unit tests alone.
+#
+# The bootstrap is `go run ./e2e/runner`, not a shell script: the Windows leg
+# must not depend on Git for Windows being installed, or it would be testing the
+# runner image rather than career. The specs themselves use atago `fixture`
+# steps instead of `cp`, so no scenario shells out either.
+
 on:
   workflow_dispatch:
   push:
@@ -17,6 +27,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          - windows-latest
           - macos-latest
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -28,14 +39,21 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
-          go-version-file: "go.mod"
+          # go.mod pins the language floor (the oldest Go that builds career
+          # unchanged), not the toolchain this job should use. Building the
+          # binary and the E2E run should exercise the current release so the
+          # artifacts users download carry the latest runtime and security
+          # fixes; unit_test.yml is where the floor itself is verified.
+          go-version: "stable"
 
       - name: Install atago
         uses: nao1215/setup-atago@e4b6719aea547a68e6c15252222babab7f492a88 # v0.1.1
         with:
-          version: v0.20.0
+          version: v0.21.0
 
+      # `go run ./e2e/runner` rather than `make e2e`: make is not part of the
+      # Windows runner image, and the make target is only a one-line alias.
       - name: Run end-to-end tests
-        run: make e2e
+        run: go run ./e2e/runner

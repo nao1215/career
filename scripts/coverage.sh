@@ -26,10 +26,10 @@ go test -count=1 -cover -covermode=atomic -coverpkg=./... ./... \
 	-args -test.gocoverdir="${cov}/unit"
 
 # 2. Self-hosted E2E via a coverage-instrumented career (COVER=1 makes
-#    e2e/run.sh build with `go build -cover`). The career child processes
+#    e2e/runner build with `go build -cover`). The career child processes
 #    inherit GOCOVERDIR and each writes raw covdata on exit.
 echo ">> e2e coverage -> ${cov}/e2e"
-COVER=1 GOCOVERDIR="${cov}/e2e" ./e2e/run.sh
+COVER=1 GOCOVERDIR="${cov}/e2e" go run ./e2e/runner
 
 # 3. Merge the raw covdata and render the combined text profile + reports.
 echo ">> merging unit + e2e covdata -> coverage.out"

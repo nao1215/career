@@ -26,7 +26,7 @@ The end-to-end tests live under `e2e/atago/` as plain-YAML
 [atago](https://github.com/nao1215/atago) specs and exercise the built binary
 the way a user does (subcommands, flags, exit codes, files on disk) using the
 fixtures in `examples/`. Run them with `make e2e`, or directly with
-`e2e/run.sh` (which also accepts atago flags, e.g. `e2e/run.sh --filter init`).
+`go run ./e2e/runner` (which also accepts atago flags, e.g. `go run ./e2e/runner --filter init`).
 
 ## Layout
 
