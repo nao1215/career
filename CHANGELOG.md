@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.4] - 2026-08-30
+
 ### Added
 
 - Scoop bucket for Windows (`scoop bucket add nao1215 https://github.com/nao1215/career`)
