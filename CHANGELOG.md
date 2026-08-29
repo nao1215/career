@@ -7,11 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Scoop bucket for Windows (`scoop bucket add nao1215 https://github.com/nao1215/career`)
+  and `.deb`, `.rpm` and `.apk` packages on the release page, so career installs
+  without a Go toolchain.
+- The end-to-end suite runs on Windows in addition to Linux and macOS.
+- A test runs every career command the demo tape types and requires each to exit 0,
+  so a renamed subcommand fails CI instead of being recorded into the README GIF.
+
 ### Changed
 
 - The end-to-end suite is now driven by [atago](https://github.com/nao1215/atago)
-  (`e2e/atago/*.atago.yaml` + `e2e/run.sh`, `make e2e`) instead of shellspec;
-  the specs cover the same CLI surface (`spec/` and `.shellspec` are removed).
+  (`e2e/atago/*.atago.yaml`, `make e2e`) instead of shellspec; the specs cover the
+  same CLI surface (`spec/` and `.shellspec` are removed).
+- The end-to-end bootstrap is `go run ./e2e/runner` instead of `e2e/run.sh`, so the
+  suite does not need a POSIX shell. The specs copy fixtures with atago `fixture`
+  steps rather than shelling out to `cp`.
+- The minimum Go version is 1.22, down from 1.25. It is the oldest release the code
+  builds and passes on unchanged. Unit tests run on 1.22 and 1.27; the released
+  binaries are built with the current Go release.
+
+### Dependencies
+
+- Bump github.com/signintech/gopdf from 0.36.1 to 0.38.0.
+- Bump actions/setup-go from 6 to 7, k1LoW/octocov-action from 1 to 1.5.1, and
+  atago from v0.20.0 to v0.21.0.
 
 ## [v0.2.3] - 2026-06-13
 
