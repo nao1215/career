@@ -26,9 +26,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
-          go-version-file: "go.mod"
+          # go.mod pins the language floor (the oldest Go that builds career
+          # unchanged), not the toolchain this job should use. Building the
+          # binary and the E2E run should exercise the current release so the
+          # artifacts users download carry the latest runtime and security
+          # fixes; unit_test.yml is where the floor itself is verified.
+          go-version: "stable"
 
       # career's E2E specs run through atago; `make coverage` builds a
       # coverage-instrumented career and runs the atago suite so the E2E
@@ -36,7 +41,7 @@ jobs:
       - name: Install atago
         uses: nao1215/setup-atago@e4b6719aea547a68e6c15252222babab7f492a88 # v0.1.1
         with:
-          version: v0.20.0
+          version: v0.21.0
 
       # Combines unit-test coverage with self-hosted E2E coverage (E2E runs a
       # `go build -cover` career and collects covdata via GOCOVERDIR), then
@@ -44,4 +49,4 @@ jobs:
       - name: Run combined unit + E2E coverage
         run: make coverage
 
-      - uses: k1LoW/octocov-action@v1
+      - uses: k1LoW/octocov-action@v1.5.1
