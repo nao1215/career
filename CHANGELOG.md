@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- The Scoop bucket. `scoop bucket add nao1215 https://github.com/nao1215/career` no longer has anything to install. A bucket hosted in its own repository is not in Scoop's known-bucket list, so `scoop search career` never found it — reaching it meant reading this README, already using Scoop, and typing the repository URL. It also published by committing into `main`, which fails the day this repository gets branch protection, and fails after the GitHub Release exists but before build provenance is attested, which cannot be added to a tag afterwards. career is distributed through `go install` and the packages and archives on the release page. Anyone who added the bucket can drop it with `scoop bucket rm nao1215`.
+
 ## [v0.2.4] - 2026-08-30
 
 ### Added
