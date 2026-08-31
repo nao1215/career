@@ -39,7 +39,7 @@ go.work.sum
 /career
 .gocache/
 
-# `goreleaser release --snapshot` output (archives, packages, scoop manifest)
+# `goreleaser release --snapshot` output (archives, packages, manifests)
 /dist/
 
 # generated PDFs (examples are rendered on demand, not committed)

@@ -63,8 +63,8 @@ career generate resume.yaml -t work-history     -o shokumukeirekisho.pdf
 
 ## Install
 
-career is distributed through `go install`, its own Scoop bucket, and the
-packages and archives on the release page.
+career is distributed through `go install` and the packages and archives on
+the release page.
 
 ### Use "go install"
 
@@ -73,19 +73,6 @@ go install github.com/nao1215/career@latest
 ```
 
 Building from source needs Go 1.22 or newer.
-
-### Use Scoop (Windows)
-
-[Scoop](https://scoop.sh/) installs career from this repository's own bucket:
-
-```shell
-scoop bucket add nao1215 https://github.com/nao1215/career
-scoop install nao1215/career
-```
-
-The bucket manifest lives in [`bucket/`](./bucket) and is regenerated on every
-release, so the Windows archive URLs and their SHA-256 hashes always match the
-artifacts on the release page.
 
 ### Install from a package or binary
 
