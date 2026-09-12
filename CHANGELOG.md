@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.5] - 2026-09-12
+
 ### Changed
 
 - The E2E suite runs with atago v0.22.0, and `k1LoW/octocov-action` moves to v1.5.2. The 27 scenarios were run locally against the new atago before the pin moved.

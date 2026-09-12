@@ -82,16 +82,16 @@ Linux and macOS and `.zip` archives for Windows.
 
 ```shell
 # Debian, Ubuntu
-sudo dpkg -i career_0.2.4_linux_amd64.deb
+sudo dpkg -i career_0.2.5_linux_amd64.deb
 
 # Fedora, RHEL, openSUSE
-sudo rpm -Uvh career_0.2.4_linux_amd64.rpm
+sudo rpm -Uvh career_0.2.5_linux_amd64.rpm
 
 # Alpine Linux
-sudo apk add --allow-untrusted career_0.2.4_linux_amd64.apk
+sudo apk add --allow-untrusted career_0.2.5_linux_amd64.apk
 ```
 
-Replace `0.2.4` with the release you downloaded and `amd64` with `arm64` where
+Replace `0.2.5` with the release you downloaded and `amd64` with `arm64` where
 applicable.
 
 ### Build from source
