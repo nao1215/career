@@ -51,7 +51,7 @@ jobs:
       - name: Install atago
         uses: nao1215/setup-atago@e4b6719aea547a68e6c15252222babab7f492a88 # v0.1.1
         with:
-          version: v0.21.0
+          version: v0.22.0
 
       # `go run ./e2e/runner` rather than `make e2e`: make is not part of the
       # Windows runner image, and the make target is only a one-line alias.
