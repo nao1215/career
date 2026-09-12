@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The E2E suite runs with atago v0.22.0, and `k1LoW/octocov-action` moves to v1.5.2. The 27 scenarios were run locally against the new atago before the pin moved.
+- `github.com/signintech/gopdf` 0.38.1, the library that renders the PDF. The `go` directive stays at 1.22.0, which is the oldest Go this code compiles under.
+
 ### Removed
 
 - The Scoop bucket. `scoop bucket add nao1215 https://github.com/nao1215/career` no longer has anything to install. A bucket hosted in its own repository is not in Scoop's known-bucket list, so `scoop search career` never found it — reaching it meant reading this README, already using Scoop, and typing the repository URL. It also published by committing into `main`, which fails the day this repository gets branch protection, and fails after the GitHub Release exists but before build provenance is attested, which cannot be added to a tag afterwards. career is distributed through `go install` and the packages and archives on the release page. Anyone who added the bucket can drop it with `scoop bucket rm nao1215`.
