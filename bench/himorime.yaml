@@ -18,9 +18,8 @@
 # and 300, which runs to 151 pages of cv so laying out text dominates.
 version: "1"
 
-suite:
-  name: career
-  description: Start-up, and rendering the cv, japanese-resume and work-history PDFs from resumes of 3 and 300 employers.
+name: career
+description: Start-up, and rendering the cv, japanese-resume and work-history PDFs from resumes of 3 and 300 employers.
 
 build:
   command: [go, build, -trimpath, -o, "${artifact}", .]
@@ -45,10 +44,10 @@ defaults:
     latency:
       max_percent: 10
       min_difference: 1ms
-    cpu:
+    cpu_total:
       max_percent: 15
       min_difference: 2ms
-    memory:
+    peak_rss:
       max_percent: 15
       min_difference: 2MiB
 
