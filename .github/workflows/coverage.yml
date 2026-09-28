@@ -21,6 +21,13 @@ jobs:
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 10
 
+    # octocov stores reports in the Actions-artifact datastore (report/diff in
+    # .octocov.yml) and comments coverage on pull requests.
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
