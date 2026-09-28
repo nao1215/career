@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Release artifacts are now signed and ship with SLSA build provenance: `checksums.txt` gets a keyless cosign bundle (`checksums.txt.sigstore.json`), and every release carries `multiple.intoto.jsonl`, which `slsa-verifier verify-artifact` checks against the downloaded archive.
+- The minimum Go version for building from source is raised from 1.22.0 to 1.23.12. govulncheck reports two standard-library advisories reachable from career under Go 1.22 (GO-2025-3956 in `os/exec` and GO-2025-3750 in `syscall`), and Go 1.22 no longer receives fixes; 1.23.12 is the first release that carries both.
 
 ### Fixed
 

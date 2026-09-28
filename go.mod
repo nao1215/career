@@ -1,6 +1,6 @@
 module github.com/nao1215/career
 
-go 1.22.0
+go 1.23.12
 
 require (
 	github.com/signintech/gopdf v0.38.1
