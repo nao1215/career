@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Release artifacts are now signed and ship with SLSA build provenance: `checksums.txt` gets a keyless cosign bundle (`checksums.txt.sigstore.json`), and every release carries `multiple.intoto.jsonl`, which `slsa-verifier verify-artifact` checks against the downloaded archive.
+
 ### Fixed
 
 - A localized field written only in languages other than `ja` and `en` (for example `name: {fr: Jean, de: Hans}`) no longer prints a randomly chosen language on each run; the first language in key order is used.
