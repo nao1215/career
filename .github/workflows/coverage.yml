@@ -22,11 +22,11 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: actions/setup-go@v7
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           # go.mod pins the language floor (the oldest Go that builds career
           # unchanged), not the toolchain this job should use. Building the
@@ -49,4 +49,4 @@ jobs:
       - name: Run combined unit + E2E coverage
         run: make coverage
 
-      - uses: k1LoW/octocov-action@v1.5.2
+      - uses: k1LoW/octocov-action@a167dc0dee441b7ffc45e1b862ab55ec0d87f278 # v1.5.2
