@@ -1,6 +1,7 @@
 package resume
 
 import (
+	"bytes"
 	"errors"
 	"os"
 	"path/filepath"
@@ -101,6 +102,30 @@ career:
 	// A scalar applies to every language.
 	if got := res.Career.Summary.For(LangEN); got != "shared summary" {
 		t.Errorf("Summary.For(en) = %q, want fallback to the scalar value", got)
+	}
+}
+
+// TestTextFallbackIsDeterministic guards the regression where a text written
+// only in languages the templates do not ask for (neither ja nor en) printed a
+// randomly chosen language on each run because the fallback walked a map.
+func TestTextFallbackIsDeterministic(t *testing.T) {
+	t.Parallel()
+
+	const doc = `
+profile:
+  name:
+    fr: Jean
+    de: Hans
+    it: Gianni
+`
+	res, err := Parse(strings.NewReader(doc))
+	if err != nil {
+		t.Fatalf("Parse() error = %v", err)
+	}
+	for range 50 {
+		if got := res.Profile.Name.For(LangJA); got != "Hans" {
+			t.Fatalf("Name.For(ja) = %q, want %q (first language in key order)", got, "Hans")
+		}
 	}
 }
 
@@ -227,4 +252,74 @@ func TestLoad(t *testing.T) {
 	if _, err := Load(filepath.Join(dir, "missing.yaml")); err == nil {
 		t.Error("Load(missing) error = nil, want error")
 	}
+}
+
+// texts collects every localized field of a parsed document.
+func texts(res *Resume) []Text {
+	out := []Text{res.Date, res.Profile.Name, res.Profile.Address.Text, res.Profile.Contact.Text}
+	for _, list := range [][]HistoryItem{res.Education, res.Work, res.Licenses} {
+		for _, it := range list {
+			out = append(out, it.Value)
+		}
+	}
+	c := res.Career
+	out = append(out, c.Summary, c.SelfPR)
+	out = append(out, c.Skills...)
+	out = append(out, c.Certifications...)
+	out = append(out, c.Publications...)
+	out = append(out, c.Links...)
+	for _, h := range c.Histories {
+		out = append(out, h.Company, h.Period, h.Role, h.Summary)
+		for _, p := range h.Projects {
+			out = append(out, p.Title, p.Period, p.Role, p.Description)
+		}
+	}
+	return out
+}
+
+// FuzzParse feeds arbitrary bytes to the resume YAML parser. Parsing may fail
+// but must not panic, and a parsed document must render the same text every
+// time: Text.For is deterministic for every language a template asks for, and
+// Has agrees with the text it would print.
+func FuzzParse(f *testing.F) {
+	for _, path := range []string{
+		"../../examples/resume.yaml", "../../examples/minimal.yaml", "../../cmd/templates/starter.yaml",
+	} {
+		b, err := os.ReadFile(path) //nolint:gosec // fixed seed paths
+		if err != nil {
+			f.Fatal(err)
+		}
+		f.Add(b)
+	}
+	for _, s := range []string{
+		"", "profile:\n  name: テスト\n  nonexistent: oops\n",
+		"profile:\n  name:\n    ja: 見本 太郎\n    en: Taro Mihon\n",
+		"profile:\n  name:\n    fr: Jean\n    de: Hans\n",
+		"education:\n  - { year: 2009, month: [4], value: {ja: x} }\n",
+		"career: &a\n  summary: *a\n", "profile: [1, 2]\n",
+	} {
+		f.Add([]byte(s))
+	}
+	f.Fuzz(func(t *testing.T, data []byte) {
+		res, err := Parse(bytes.NewReader(data))
+		if err != nil {
+			if res != nil {
+				t.Fatalf("Parse returned a document with error %v", err)
+			}
+			return
+		}
+		for _, txt := range texts(res) {
+			for _, lang := range []string{"", LangJA, LangEN, "fr"} {
+				first := txt.For(lang)
+				for range 8 {
+					if got := txt.For(lang); got != first {
+						t.Fatalf("Text.For(%q) is not deterministic: %q then %q", lang, first, got)
+					}
+				}
+			}
+			if got, want := txt.Has(), strings.TrimSpace(txt.For("")) != ""; got != want {
+				t.Fatalf("Text.Has() = %v, but For(\"\") = %q", got, txt.For(""))
+			}
+		}
+	})
 }

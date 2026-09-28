@@ -20,6 +20,11 @@ func TestAccent(t *testing.T) {
 		{name: "padded", setting: "  #00ff00  ", wantEnabled: true, wantColor: rgb{0, 0xff, 0}},
 		{name: "too short", setting: "#fff", wantErr: true},
 		{name: "non hex", setting: "#zzzzzz", wantErr: true},
+		// Regression: fmt.Sscanf stopped at the first non-hex digit and
+		// accepted these as a different color.
+		{name: "typo in last digit", setting: "#1f4e7g", wantErr: true},
+		{name: "0X in last pair", setting: "00000X", wantErr: true},
+		{name: "signed pairs", setting: "+f+f+f", wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
