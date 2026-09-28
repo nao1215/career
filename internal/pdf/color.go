@@ -1,6 +1,7 @@
 package pdf
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strings"
 )
@@ -50,9 +51,11 @@ func parseHexColor(s string) (rgb, error) {
 	if len(h) != 6 {
 		return rgb{}, fmt.Errorf("invalid hex color %q: want #rrggbb", s)
 	}
-	var c rgb
-	if _, err := fmt.Sscanf(h, "%02x%02x%02x", &c.r, &c.g, &c.b); err != nil {
+	// hex.DecodeString rejects any non-hex digit; fmt.Sscanf did not, so a typo
+	// such as "#1f4e7g" was silently read as a different color.
+	b, err := hex.DecodeString(h)
+	if err != nil {
 		return rgb{}, fmt.Errorf("invalid hex color %q: %w", s, err)
 	}
-	return c, nil
+	return rgb{b[0], b[1], b[2]}, nil
 }

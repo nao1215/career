@@ -2,6 +2,7 @@ package resume
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -65,8 +66,16 @@ func (t Text) For(lang string) string {
 			return v
 		}
 	}
-	for _, v := range t.byLang {
-		if v != "" {
+	// Map iteration order is random, so pick among the remaining languages in
+	// key order; otherwise the same document could print a different language
+	// on every run.
+	keys := make([]string, 0, len(t.byLang))
+	for k := range t.byLang {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		if v := t.byLang[k]; v != "" {
 			return v
 		}
 	}

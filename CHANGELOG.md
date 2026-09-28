@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- A localized field written only in languages other than `ja` and `en` (for example `name: {fr: Jean, de: Hans}`) no longer prints a randomly chosen language on each run; the first language in key order is used.
+- `theme.accent` rejects a value with a non-hex digit such as `#1f4e7g` instead of silently rendering a different color.
+
 ## [v0.2.5] - 2026-09-12
 
 ### Changed
