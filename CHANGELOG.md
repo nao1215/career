@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.6] - 2026-09-28
+
 ### Changed
 
 - Release artifacts are now signed and ship with SLSA build provenance: `checksums.txt` gets a keyless cosign bundle (`checksums.txt.sigstore.json`), and every release carries `multiple.intoto.jsonl`, which `slsa-verifier verify-artifact` checks against the downloaded archive.
@@ -156,7 +158,10 @@ Initial release.
   setup.
 - Example resume files, a vhs demo GIF, and a shellspec end-to-end suite.
 
-[Unreleased]: https://github.com/nao1215/career/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/nao1215/career/compare/v0.2.6...HEAD
+[v0.2.6]: https://github.com/nao1215/career/compare/v0.2.5...v0.2.6
+[v0.2.5]: https://github.com/nao1215/career/compare/v0.2.4...v0.2.5
+[v0.2.4]: https://github.com/nao1215/career/compare/v0.2.3...v0.2.4
 [v0.2.3]: https://github.com/nao1215/career/compare/v0.2.2...v0.2.3
 [v0.2.2]: https://github.com/nao1215/career/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/nao1215/career/compare/v0.2.0...v0.2.1
