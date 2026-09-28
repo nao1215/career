@@ -29,7 +29,7 @@ jobs:
         # 1.28 ships -- and rather than "1", because setup-go resolves "1"
         # from its own manifest, which lags a fresh release.
         go:
-          - "1.22"
+          - "1.23"
           - "stable"
       fail-fast: false
     runs-on: ${{ matrix.os }}

@@ -74,7 +74,7 @@ the release page.
 go install github.com/nao1215/career@latest
 ```
 
-Building from source needs Go 1.22 or newer.
+Building from source needs Go 1.23.12 or newer.
 
 ### Install from a package or binary
 
