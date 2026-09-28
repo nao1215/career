@@ -33,12 +33,20 @@ jobs:
     # fixed in a specific patch of a specific minor, so an advisory fixed in the
     # newest Go can still be live for someone building with the minimum.
     # Keep the first entry equal to the go directive in go.mod.
+    #
+    # Go 1.23 no longer receives security releases (Go patches only the two
+    # newest minors), so standard-library advisories on that line have no fixed
+    # version and nothing in this repository can clear them. On that leg they
+    # are printed as warnings; a dependency advisory still fails it. Set
+    # stdlib to "fail" once the go directive is on a supported minor.
     strategy:
       fail-fast: false
       matrix:
-        go:
-          - "1.23.12"
-          - "stable"
+        include:
+          - go: "1.23.12"
+            stdlib: warn
+          - go: "stable"
+            stdlib: fail
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -73,11 +81,20 @@ jobs:
       - name: Scan the module
         env:
           ACCEPTED: ""
+          STDLIB: ${{ matrix.stdlib }}
         run: |
           set -o pipefail
           govulncheck -format json ./... > "$RUNNER_TEMP/govulncheck.json"
           jq -e -s 'length > 0' "$RUNNER_TEMP/govulncheck.json" > /dev/null
-          jq -r 'select(.finding != null and (.finding.trace[0].function // "") != "") | .finding.osv' \
+          called='select(.finding != null and (.finding.trace[0].function // "") != "")'
+          if [ "$STDLIB" = "warn" ]; then
+            jq -r "$called | select(.finding.trace[0].module == \"stdlib\") | .finding.osv" \
+              "$RUNNER_TEMP/govulncheck.json" | sort -u | while read -r id; do
+                echo "::warning::$id is reachable in the standard library of an unsupported Go line"
+              done
+            called="$called | select(.finding.trace[0].module != \"stdlib\")"
+          fi
+          jq -r "$called | .finding.osv" \
             "$RUNNER_TEMP/govulncheck.json" | sort -u > "$RUNNER_TEMP/called.txt"
           tr ' ' '\n' <<< "$ACCEPTED" | sed '/^$/d' > "$RUNNER_TEMP/accepted.txt"
           if grep -vxF -f "$RUNNER_TEMP/accepted.txt" "$RUNNER_TEMP/called.txt"; then
