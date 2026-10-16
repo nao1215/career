@@ -3,7 +3,7 @@ module github.com/nao1215/career
 go 1.23.12
 
 require (
-	github.com/signintech/gopdf v0.38.1
+	github.com/signintech/gopdf v0.38.2
 	gopkg.in/yaml.v3 v3.0.1
 )
 
