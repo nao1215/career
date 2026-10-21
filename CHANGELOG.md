@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Release archives and Linux packages now include the license texts of the linked dependencies under THIRD_PARTY_LICENSES/. CI checks dependency licenses on Linux, Windows, and macOS.
+
 ## [v0.2.6] - 2026-09-28
 
 ### Changed
