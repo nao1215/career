@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Dependencies: github.com/signintech/gopdf v0.38.1 -> v0.38.4.
 - Release archives and Linux packages now include the license texts of the linked dependencies under THIRD_PARTY_LICENSES/. CI checks dependency licenses on Linux, Windows, and macOS.
 
 ## [v0.2.6] - 2026-09-28
