@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.2.7] - 2026-11-09
+
 ### Changed
 
 - Dependencies: github.com/signintech/gopdf v0.38.1 -> v0.38.4.
+- The prebuilt binaries are built with Go 1.27.3. The v0.2.6 binaries were built with Go 1.27.1, before the standard library fixes released with Go 1.27.2 and 1.27.3, such as GO-2026-6617 in `net/http` and GO-2026-6809 in `crypto/x509`.
 - Release archives and Linux packages now include the license texts of the linked dependencies under THIRD_PARTY_LICENSES/. CI checks dependency licenses on Linux, Windows, and macOS.
 
 ## [v0.2.6] - 2026-09-28
@@ -163,7 +166,8 @@ Initial release.
   setup.
 - Example resume files, a vhs demo GIF, and a shellspec end-to-end suite.
 
-[Unreleased]: https://github.com/nao1215/career/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/nao1215/career/compare/v0.2.7...HEAD
+[v0.2.7]: https://github.com/nao1215/career/compare/v0.2.6...v0.2.7
 [v0.2.6]: https://github.com/nao1215/career/compare/v0.2.5...v0.2.6
 [v0.2.5]: https://github.com/nao1215/career/compare/v0.2.4...v0.2.5
 [v0.2.4]: https://github.com/nao1215/career/compare/v0.2.3...v0.2.4
