@@ -15,7 +15,7 @@ var ErrEmptyName = errors.New("profile.name is required")
 
 // Load reads and parses a resume YAML file from path.
 func Load(path string) (*Resume, error) {
-	f, err := os.Open(path) //nolint:gosec // path is a user-supplied input file by design
+	f, err := os.Open(path) // #nosec G304 -- path is a user-supplied input file by design
 	if err != nil {
 		return nil, fmt.Errorf("open resume file: %w", err)
 	}
