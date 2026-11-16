@@ -23,7 +23,7 @@ const (
 
 // photoDims returns the pixel width and height of the image at path.
 func photoDims(path string) (w, h int, err error) {
-	f, err := os.Open(path) //nolint:gosec // path is a user-supplied portrait by design
+	f, err := os.Open(path) // #nosec G304 -- path is a user-supplied portrait by design
 	if err != nil {
 		return 0, 0, err
 	}
