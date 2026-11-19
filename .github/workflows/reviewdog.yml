@@ -8,6 +8,10 @@ permissions:
 # write access to pull requests; reading the checked-out code needs contents.
 # The write scope is granted per job rather than to the whole workflow.
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   golangci-lint:
     name: golangci-lint

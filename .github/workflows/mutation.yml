@@ -39,7 +39,10 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version-file: go.mod
+          # gremlins v0.6.0 needs Go 1.25 or later, above this module's
+          # go.mod floor (1.23.12). The floor is checked by unit_test.yml;
+          # mutation only needs a Go that builds gremlins and the tests.
+          go-version: stable
       - name: Install gremlins
         run: go install "github.com/go-gremlins/gremlins/cmd/gremlins@${GREMLINS_VERSION}"
       - name: Mutate the lines this pull request changes
