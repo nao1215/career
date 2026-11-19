@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- The `github.com/nao1215/career/cmd` package (`App`, `NewApp`, `Version`) is no longer importable; it moved to `internal/cmd`. It only existed to back the `career` binary, and pkg.go.dev listed no importers (2026-11-19). The CLI is unchanged.
+
 ### Changed
 
 - CI scans the repository with gosec and Trivy on every pull request (Trivy covers dependency vulnerabilities, committed secrets and misconfigurations, and also runs daily). Workflow actions are recorded in `.github/workflows/actions.lock`, which CI verifies against the pinned commits.

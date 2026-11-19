@@ -10,7 +10,7 @@ import (
 
 // demoTapePath is the VHS script that renders image/demo.gif, the first thing a
 // reader sees in the README.
-const demoTapePath = "../docs/demo.tape"
+const demoTapePath = "../../docs/demo.tape"
 
 // TestDemoTapeCommandsStillWork runs every career command the demo tape types
 // and requires each to exit 0.
@@ -29,7 +29,7 @@ func TestDemoTapeCommandsStillWork(t *testing.T) {
 		t.Fatalf("%s types no career commands; the tape or this parser is wrong", demoTapePath)
 	}
 
-	examples, err := filepath.Abs("../examples")
+	examples, err := filepath.Abs("../../examples")
 	if err != nil {
 		t.Fatal(err)
 	}

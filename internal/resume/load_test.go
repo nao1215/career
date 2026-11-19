@@ -283,7 +283,7 @@ func texts(res *Resume) []Text {
 // Has agrees with the text it would print.
 func FuzzParse(f *testing.F) {
 	for _, path := range []string{
-		"../../examples/resume.yaml", "../../examples/minimal.yaml", "../../cmd/templates/starter.yaml",
+		"../../examples/resume.yaml", "../../examples/minimal.yaml", "../cmd/templates/starter.yaml",
 	} {
 		b, err := os.ReadFile(path) //nolint:gosec // fixed seed paths
 		if err != nil {
