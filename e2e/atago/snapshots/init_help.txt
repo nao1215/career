@@ -1,0 +1,7 @@
+Write a starter resume YAML file you can edit.
+Usage: career init [PATH] [--force]
+PATH defaults to resume.yaml in the current directory.
+  -f=false
+      shorthand for --force
+  -force=false
+      overwrite the file if it already exists

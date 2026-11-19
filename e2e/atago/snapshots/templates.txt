@@ -1,0 +1,11 @@
+cv
+  English curriculum vitae / résumé
+  default output: cv.pdf
+japanese-resume
+  aliases: 履歴書
+  JIS-style Japanese 履歴書 (A4)
+  default output: japanese-resume.pdf
+work-history
+  aliases: 職務経歴書, career-history
+  Japanese 職務経歴書 (work history with projects)
+  default output: work-history.pdf
