@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.3.0] - 2026-11-19
+
 ### Removed
 
 - The `github.com/nao1215/career/cmd` package (`App`, `NewApp`, `Version`) is no longer importable; it moved to `internal/cmd`. It only existed to back the `career` binary, and pkg.go.dev listed no importers (2026-11-19). The CLI is unchanged.
@@ -175,7 +177,8 @@ Initial release.
   setup.
 - Example resume files, a vhs demo GIF, and a shellspec end-to-end suite.
 
-[Unreleased]: https://github.com/nao1215/career/compare/v0.2.7...HEAD
+[Unreleased]: https://github.com/nao1215/career/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/nao1215/career/compare/v0.2.7...v0.3.0
 [v0.2.7]: https://github.com/nao1215/career/compare/v0.2.6...v0.2.7
 [v0.2.6]: https://github.com/nao1215/career/compare/v0.2.5...v0.2.6
 [v0.2.5]: https://github.com/nao1215/career/compare/v0.2.4...v0.2.5
