@@ -30,7 +30,7 @@ fixtures in `examples/`. Run them with `make e2e`, or directly with
 
 ## Layout
 
-- `cmd/` — the CLI: command dispatch, flag parsing, and the `generate` command.
+- `internal/cmd/` — the CLI: command dispatch, flag parsing, and the `generate` command.
 - `internal/resume` — the YAML data model and loader.
 - `internal/pdf` — the 履歴書 and 職務経歴書 renderers and the template registry.
 - `internal/font` — the embedded IPAex fonts.

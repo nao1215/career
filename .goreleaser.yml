@@ -15,7 +15,7 @@ builds:
   - main: .
     binary: career
     ldflags:
-      - -s -w -X github.com/nao1215/career/cmd.Version=v{{ .Version }}
+      - -s -w -X github.com/nao1215/career/internal/cmd.Version=v{{ .Version }}
     env:
       - CGO_ENABLED=0
     goos:
