@@ -1,0 +1,49 @@
+# Snapshot tests for the text career prints. cli.atago.yaml checks that a few
+# words appear; these pin the whole help and template listing, so a changed
+# flag description, a dropped alias or a reordered command list fails with a
+# diff instead of passing silently.
+#
+# Record or refresh the snapshots after an intended change with:
+#   atago snapshot update e2e/atago/snapshot.atago.yaml
+# Run with: make e2e   (or go run ./e2e/runner)
+version: "1"
+
+suite:
+  name: career output snapshots
+
+scenarios:
+  - name: root help lists the commands exactly
+    steps:
+      - run:
+          command: career
+      - assert:
+          exit_code: 0
+          stdout:
+            snapshot: snapshots/help.txt
+
+  - name: templates lists every template, alias and default output
+    steps:
+      - run:
+          command: career templates
+      - assert:
+          exit_code: 0
+          stdout:
+            snapshot: snapshots/templates.txt
+
+  - name: generate --help documents every flag
+    steps:
+      - run:
+          command: career generate --help
+      - assert:
+          exit_code: 0
+          stdout:
+            snapshot: snapshots/generate_help.txt
+
+  - name: init --help documents every flag
+    steps:
+      - run:
+          command: career init --help
+      - assert:
+          exit_code: 0
+          stdout:
+            snapshot: snapshots/init_help.txt

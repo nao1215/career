@@ -1,0 +1,20 @@
+Render a resume YAML file into one or more CV / 履歴書 / 職務経歴書 PDFs.
+Usage: career generate [INPUT] [--template NAME ...] [--input PATH] [--output PATH] [--accent COLOR] [--photo IMG]
+Defaults to the cv template. Use --template all, or repeat/comma-separate names, for several at once.
+Run "career templates" to list the available templates.
+  -accent=
+      accent color for cv/work-history: #rrggbb or "none" (overrides theme.accent)
+  -i=
+      shorthand for --input
+  -input=
+      path to the resume YAML file (defaults to the first argument)
+  -o=
+      shorthand for --output
+  -output=
+      output PDF path (only valid with a single template; defaults to the template's name)
+  -photo=
+      portrait image for the 履歴書 (overrides profile.photo)
+  -t=
+      shorthand for --template
+  -template=
+      document template: cv, japanese-resume, work-history, or all (repeatable, comma-separated)

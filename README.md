@@ -312,6 +312,8 @@ make demo      # regenerate image/demo.gif (needs vhs)
 | [Metamorphic relations](docs/testing.md#metamorphic-relations) | Line breaking that depends on the column width or paragraph order |
 | [Fuzzing](docs/testing.md#fuzzing) | Panics and lost text on malformed YAML and free text |
 | [CLI end-to-end tests](docs/testing.md#cli-end-to-end-tests) | Wrong exit codes, flags and written files of the binary |
+| [Output snapshots](docs/testing.md#output-snapshots) | Unintended changes to the help and template listing |
+| [Mutation testing](docs/testing.md#mutation-testing) | Tests that still pass when a comparison or branch is changed |
 | [Paired CI benchmarks](docs/testing.md#paired-ci-benchmarks) | Slower generation hidden by runner noise |
 
 ## Contributors ✨

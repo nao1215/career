@@ -1,0 +1,15 @@
+Generate Japanese 履歴書 and 職務経歴書 PDFs from a YAML file.
+
+Usage:
+  career <command> [arguments] [flags]
+
+Commands:
+  init        Write a starter resume YAML file
+  generate    Render a resume YAML file into a PDF
+  templates   List the available document templates
+  version     Print the version
+  help        Show command help
+
+Example:
+  career init
+  career generate resume.yaml --template cv --output cv.pdf
