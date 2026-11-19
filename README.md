@@ -303,6 +303,17 @@ make build     # build ./career
 make demo      # regenerate image/demo.gif (needs vhs)
 ```
 
+## Testing
+
+| Technique | Bug class caught here |
+|---|---|
+| [Unit tests](docs/testing.md#unit-tests) | Wrong validation, layout and rendered pages |
+| [Generated properties](docs/testing.md#generated-properties) | Text that resolves to the wrong language |
+| [Metamorphic relations](docs/testing.md#metamorphic-relations) | Line breaking that depends on the column width or paragraph order |
+| [Fuzzing](docs/testing.md#fuzzing) | Panics and lost text on malformed YAML and free text |
+| [CLI end-to-end tests](docs/testing.md#cli-end-to-end-tests) | Wrong exit codes, flags and written files of the binary |
+| [Paired CI benchmarks](docs/testing.md#paired-ci-benchmarks) | Slower generation hidden by runner noise |
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/en/reference/emoji-key/)):

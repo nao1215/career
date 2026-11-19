@@ -5,6 +5,7 @@ go 1.23.12
 require (
 	github.com/signintech/gopdf v0.38.4
 	gopkg.in/yaml.v3 v3.0.1
+	pgregory.net/rapid v1.3.0
 )
 
 require (
